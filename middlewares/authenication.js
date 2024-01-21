@@ -2,6 +2,7 @@ require("dotenv").config()
 const { userModel } = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
 
+
 const authentication = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1]  //optional chaining
     if (!token) {
