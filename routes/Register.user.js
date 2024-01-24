@@ -1,8 +1,12 @@
 const express = require('express');
 const registerRouteU = express.Router();
 const bcrypt = require('bcrypt');
+const Token = require("../models/token");
+const sendEmail = require("../utils/sendEmail");
+const crypto = require("crypto")
 
 const { userModel } = require('../models/UserModel');
+
 
 const generateAccountNumber = async () => {
     const lastUser = await userModel.findOne({}, {}, { sort: { 'createdAt': -1 } });
@@ -16,10 +20,22 @@ const generateAccountNumber = async () => {
         }
     }
 
-    const newNumber = lastNumber + 1;
-    const formattedNumber = newNumber.toString().padStart(6, '0');
-    return `GFX${formattedNumber}`;
+    let newNumber;
+    do {
+        newNumber = lastNumber + 1;
+        const formattedNumber = newNumber.toString().padStart(6, '0');
+        const newAcNumber = `GFX${formattedNumber}`;
+        const existingUser = await userModel.findOne({ AcNumber: newAcNumber });
+
+        if (!existingUser) {
+            return newAcNumber;
+        }
+
+        // If the generated account number already exists, try again with the next number
+        lastNumber++;
+    } while (true);
 };
+
 
 registerRouteU.post('/', async (req, res) => {
     try {
@@ -51,7 +67,7 @@ registerRouteU.post('/', async (req, res) => {
                 phone,
                 account_type,
                 leverage,
-                AcNumber:accountNumber,
+                AcNumber: accountNumber,
             });
 
             const existingNo = await userModel.findOne({ phone });
@@ -62,16 +78,24 @@ registerRouteU.post('/', async (req, res) => {
             }
 
             // Check if the email is already present
-            const user = await userModel.findOne({ email });
+            let user = await userModel.findOne({ email });
             if (user) {
                 return res.status(400).json({
                     msg: 'This email is already present. Try logging in.',
                 });
             }
 
-            await new_user.save();
+             user = await new_user.save();
+            const token = await new Token({
+                userId: user._id,
+                token: crypto.randomBytes(32).toString("hex")
+            }).save()
+            const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
+            
+            console.log(user.email)
+            await sendEmail(user.email, "verify", url)
             res.json({
-                msg: 'Registered successfully',
+                msg: 'an email sent plzz verify successfully',
             });
         });
     } catch (error) {
@@ -98,4 +122,32 @@ registerRouteU.post('/', async (req, res) => {
 //     }
 // })
 
+
+
+registerRouteU.get("/:id/verify/:token", async (req, res) => {
+    try {
+        const user = await userModel.findOne({ _id: req.params.id })
+        if (!user) return res.status(400).send({ msg: "invalid link" })
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.params.token
+        })
+
+        if (!token) return res.status(400).send({ message: "invalid link" })
+        await user.updateOne({ _id: user._id, verified: true });
+
+        // Use deleteOne instead of remove
+        await Token.deleteOne({
+            userId: user._id,
+            token: req.params.token   
+        });
+
+        res.status(200).send({msg:"Email verified successfully "})
+
+    } catch (error) {
+       console.log(error);
+       res.status(500).send({msg:"Internal server Error"})
+    }
+})
 module.exports = registerRouteU

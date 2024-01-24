@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 
 const { userModel } = require('../models/UserModel');
+const Token = require('../models/token');
 
 
 LoginVRoutes.post('/', async (req, res) => {
@@ -20,9 +21,20 @@ LoginVRoutes.post('/', async (req, res) => {
             const model =  user
             const hashed_password = model.password;
             const result = await bcrypt.compare(password, hashed_password);
-
+           if(!user){
+            let token = await Token.findOne({ userId: user._id });
+			if (!token) {
+				token = await new Token({
+					userId: user._id,
+					token: crypto.randomBytes(32).toString("hex"),
+				}).save();
+				const url = `${process.env.BASE_URL}users/${user.id}/verify/${token.token}`;
+				await sendEmail(user.email, "Verify Email", url);
+           }
+        }
             if (result) {
                 const token = jwt.sign({ _id: model._id, userType:user }, process.env.SECRET_KEY);
+
                 return res.status(200).json({
                     msg: `Login successfully `,
                     type:model,
