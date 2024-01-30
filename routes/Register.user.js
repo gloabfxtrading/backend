@@ -109,18 +109,18 @@ registerRouteU.post('/', async (req, res) => {
 // const { authentication } = require("../middlewares/authenication")
 // registerRouteU.use(authentication);
 
-// registerRouteU.get('/:userID', async (req, res) => {
-//     try {
-//         const user = await userModel.find({ _id: req.params.userID });
-//         return res.status(200).send(user);
-//     }
-//     catch (error) {
-//         console.log(error);
-//         return res.status(500).send({
-//             msg: "Error In Get All Users"
-//         });
-//     }
-// })
+registerRouteU.get('/:userID', async (req, res) => {
+    try {
+        const user = await userModel.find({ _id: req.params.userID });
+        return res.status(200).send(user);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            msg: "Error In Get All Users"
+        });
+    }
+})
 
 
 

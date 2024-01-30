@@ -24,6 +24,13 @@ app.use("/register", registerRouteU);
 const  Login  = require("./routes/Login.user");
 app.use("/login", Login);
 
+const  MakeaDeal  = require("./routes/deal");
+app.use("/makeadeal", MakeaDeal);
+
+
+const  ClosedDealRoute  = require("./routes/closedDeal");
+app.use("/close", ClosedDealRoute);
+
 const port = process.env.PORT;
 app.listen(port, async () => {
     try {
