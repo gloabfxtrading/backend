@@ -38,4 +38,18 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
     }
 });
 
+ClosedDealRoute.get("/:id",async(req,res)=>{
+    try {
+        const {id}=req.params;
+
+        const deals=await ClosedDealModel.find({dealer_id:id})
+        return res.status(200).send(deals)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg:"Error while fetching deals"})
+    }
+   
+
+})
+
 module.exports = ClosedDealRoute;
