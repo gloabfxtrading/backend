@@ -14,6 +14,7 @@ const dealSchema=new mongoose.Schema({
       bidorask:{ type: String, required: [true, "bidorask is required"] },
       takeprofit: { type: String, default: null }, 
     stoploss: { type: String, default: null }, 
+    price:{type:Number,required:[true,"price is required"]}
       
 })
 

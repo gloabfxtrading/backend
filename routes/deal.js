@@ -39,7 +39,7 @@ const generateAccountNumber = async () => {
 
 dealRoute.post('/', async (req, res) => {
     try {
-        const { dealer_id,order_type, title, lotsize, created_at, bidorask, takeprofit, stoploss } = req.body
+        const { dealer_id,order_type, title, lotsize, created_at, bidorask, takeprofit, stoploss,price } = req.body
         const accountNumber = await generateAccountNumber();
         const new_user = new DealModel({
             order_id: accountNumber,
@@ -51,6 +51,7 @@ dealRoute.post('/', async (req, res) => {
             bidorask,
             takeprofit: takeprofit || null, // Use provided value or set to null
             stoploss: stoploss || null,
+            price
         });
         let user = await new_user.save();
         return res.status(200).send({ msg: "added sucessfully", user });
