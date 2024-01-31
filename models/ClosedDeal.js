@@ -17,6 +17,10 @@ const ClosedSchema = new mongoose.Schema({
     close_rate: { type: String, required: [true, "close rate is required"] },
     order_profit: { type: String, required: [true, "order_profit is required"] },
     manual_auto: { type: String, required: [true, "manual auto is required"] , default: "Auto Close" },
+    closed_at: {
+        type: Date,
+        default: Date.now, // Set default value to the current timestamp
+      }, 
 })
 
 const ClosedDealModel=mongoose.model('closeddeal',ClosedSchema)

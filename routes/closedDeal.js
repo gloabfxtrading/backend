@@ -6,7 +6,7 @@ const ClosedDealModel = require("../models/ClosedDeal");
 ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
     try {
         // Assuming userId is provided in the request body
-         const {close_rate,manual_auto,order_profit}=req.body
+         const {close_rate,manual_auto,order_profit,closed_at}=req.body
         // Fetch data from DealModel based on userId
         const { id, order_id } = req.params;
 
@@ -27,7 +27,8 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
             stoploss: deal.stoploss,
             order_profit,
             close_rate,
-            manual_auto 
+            manual_auto,
+            closed_at
         })));
           
         await DealModel.deleteMany({ dealer_id: id, order_id: order_id });
