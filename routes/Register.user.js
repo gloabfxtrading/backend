@@ -111,7 +111,7 @@ registerRouteU.post('/', async (req, res) => {
 
 registerRouteU.get('/:userID', async (req, res) => {
     try {
-        const user = await userModel.find({ _id: req.params.userID });
+        const user = await userModel.findOne({ AcNumber: req.params.userID });
         return res.status(200).send(user);
     }
     catch (error) {
