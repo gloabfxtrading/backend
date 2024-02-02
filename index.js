@@ -31,6 +31,25 @@ app.use("/makeadeal", MakeaDeal);
 const  ClosedDealRoute  = require("./routes/closedDeal");
 app.use("/close", ClosedDealRoute);
 
+const  AdminDeposit  = require("./routes/adminDeposit");
+app.use("/deposit", AdminDeposit);
+
+
+
+const  AdminRouteRegister  = require("./routes/admin.Register");
+app.use("/admin", AdminRouteRegister);
+
+
+const  AdminRouteLogin  = require("./routes/admin.Login");
+app.use("/adminlogin", AdminRouteLogin);
+
+
+const  UserGetRoute  = require("./routes/user.getbalance");
+app.use("/getbal", UserGetRoute);
+
+const  UpdateProfitRoute  = require("./routes/updateProfit");
+app.use("/update", UpdateProfitRoute);
+
 const port = process.env.PORT;
 app.listen(port, async () => {
     try {

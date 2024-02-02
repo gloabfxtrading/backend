@@ -54,7 +54,7 @@ dealRoute.post('/', async (req, res) => {
             price
         });
         let user = await new_user.save();
-        return res.status(200).send({ msg: "added sucessfully", user });
+        return res.status(200).send({ msg: "deal added sucessfully", user });
     } catch (error) {
         return res.status(500).send({
             msg: "Error In Deal"
@@ -71,6 +71,51 @@ dealRoute.get('/:id', async (req, res) => {
         return res.status(500).send({
             msg: "Error while Deal"
         });
+    }
+})
+
+dealRoute.get('/:id/dealprice', async (req, res) => {
+    try {
+        // Use MongoDB aggregation framework to get the sum of prices for a specific dealer_id
+        let result = await DealModel.aggregate([
+            {
+                $match: { dealer_id: req.params.id }
+            },
+            {
+                $group: {
+                    _id:null,
+                    total_price: { $sum: "$price" }
+                }
+            }
+        ]);
+
+        // Check if there are deals for the provided dealer_id
+        if (result.length === 0) {
+            return res.status(404).send({
+                total_price:0
+            });
+        }
+
+        // Send the total_price in the response
+        return res.status(200).send({
+            total_price: result[0].total_price
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({
+            msg: "Error while fetching deals"
+        });
+    }
+});
+
+
+dealRoute.get("/singledeal/:id",async(req,res)=>{
+    try {
+        const user=await DealModel.findOne({order_id:req.params.id})
+        return res.status(200).send(user)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send({msg:"Error while fetching"})
     }
 })
 

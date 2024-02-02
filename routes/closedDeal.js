@@ -2,6 +2,7 @@ const express = require("express");
 const ClosedDealRoute = express.Router();
 const DealModel = require("../models/Deal");
 const ClosedDealModel = require("../models/ClosedDeal");
+const DepositModel = require("../models/adminDeposit.Model");
 
 ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
     try {
@@ -52,5 +53,39 @@ ClosedDealRoute.get("/:id",async(req,res)=>{
    
 
 })
+
+
+ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
+    try {
+        const accountId = req.params.id;
+        const orderId=req.params.order_id
+        const profitToAdd = req.body.profit; // Assuming profit is sent in the request body
+
+        // Find the deposit record for the specified account
+        const existingDeposit = await DepositModel.findOne({ AccountNo: accountId });
+
+        if (existingDeposit) {
+            // Update the balance by adding the profit
+            if(existingDeposit===0){
+                existingDeposit = await DepositModel.findOne({ AccountNo: accountId});
+            }
+            existingDeposit.balance += profitToAdd;
+
+            // Save the updated deposit record
+            const updatedDeposit = await existingDeposit.save();
+
+            return res.status(200).send({
+                AccountNo: updatedDeposit.AccountNo,
+                totalBalance: updatedDeposit.balance,
+            });
+        } else {
+            return res.status(404).send({ msg: "No deposits found for the provided account number" });
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ msg: "Error in network" });
+    }
+});
 
 module.exports = ClosedDealRoute;
