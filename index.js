@@ -50,6 +50,12 @@ app.use("/getbal", UserGetRoute);
 const  UpdateProfitRoute  = require("./routes/updateProfit");
 app.use("/update", UpdateProfitRoute);
 
+const  BankRoute  = require("./routes/addBankdetails");
+app.use("/bank", BankRoute);
+
+const  WithdrawRequestRoute  = require("./routes/Withdraw");
+app.use("/requestmoney", WithdrawRequestRoute);
+
 const port = process.env.PORT;
 app.listen(port, async () => {
     try {

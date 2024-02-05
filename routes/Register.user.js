@@ -9,22 +9,22 @@ const { userModel } = require('../models/UserModel');
 
 
 const generateAccountNumber = async () => {
+    const startNumber = 1000100001; // Starting number for the account number
     const lastUser = await userModel.findOne({}, {}, { sort: { 'createdAt': -1 } });
-    let lastNumber = 0;
+    let lastNumber = startNumber; // Initialize with the starting number
 
     if (lastUser) {
         const lastAccountNumber = lastUser.AcNumber;
 
-        if (lastAccountNumber && lastAccountNumber.startsWith('GFX')) {
-            lastNumber = parseInt(lastAccountNumber.substring(3), 10);
+        if (lastAccountNumber && lastAccountNumber >= startNumber) {
+            lastNumber = lastAccountNumber + 1;
         }
     }
 
     let newNumber;
     do {
-        newNumber = lastNumber + 1;
-        const formattedNumber = newNumber.toString().padStart(6, '0');
-        const newAcNumber = `GFX${formattedNumber}`;
+        newNumber = lastNumber++;
+        const newAcNumber = newNumber.toString().padStart(10, '0');
         const existingUser = await userModel.findOne({ AcNumber: newAcNumber });
 
         if (!existingUser) {
@@ -32,9 +32,14 @@ const generateAccountNumber = async () => {
         }
 
         // If the generated account number already exists, try again with the next number
-        lastNumber++;
     } while (true);
 };
+
+
+
+
+
+
 
 
 registerRouteU.post('/', async (req, res) => {
