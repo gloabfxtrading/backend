@@ -26,10 +26,10 @@ AdminDeposit.post('/', async (req, res) => {
 
             return res.status(200).send({ msg: "Amount added successfully", deposituser: updatedDeposit });
         } else {
-            // If the deposit entry doesn't exist, create a new one
+            // If the deposit entry doesn't exist, create a new one with initial balance as zero
             const deposit = new DepositModel({
                 AccountNo,
-                balance
+                balance: 0 // Initialize balance to zero
             });
 
             const deposituser = await deposit.save();
