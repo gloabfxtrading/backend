@@ -56,6 +56,9 @@ app.use("/bank", BankRoute);
 const  WithdrawRequestRoute  = require("./routes/Withdraw");
 app.use("/requestmoney", WithdrawRequestRoute);
 
+const  Checkmail  = require("./routes/checkEmail");
+app.use("/check", Checkmail);
+
 const port = process.env.PORT;
 app.listen(port, async () => {
     try {

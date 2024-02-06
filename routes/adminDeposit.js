@@ -32,7 +32,7 @@ AdminDeposit.post('/', async (req, res) => {
                 balance
             });
 
-            let deposituser = await deposit.save();
+            const deposituser = await deposit.save();
             return res.status(200).send({ msg: "Amount added successfully", deposituser });
         }
     } catch (error) {
@@ -40,6 +40,8 @@ AdminDeposit.post('/', async (req, res) => {
         return res.status(500).send({ msg: "Error in network", error: error.message });
     }
 });
+
+
 
 
 

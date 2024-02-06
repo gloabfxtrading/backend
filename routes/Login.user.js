@@ -15,9 +15,6 @@ LoginVRoutes.post('/', async (req, res) => {
         // Check if the email exists in either vendorModel or userModel
        
         const user = await userModel.findOne({ email });
-        
-
-       
             const model =  user
             const hashed_password = model.password;
             const result = await bcrypt.compare(password, hashed_password);
