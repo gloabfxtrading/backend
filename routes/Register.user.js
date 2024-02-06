@@ -90,13 +90,19 @@ registerRouteU.post('/', async (req, res) => {
                 });
             }
 
-             user = await new_user.save();
+            user = await new_user.save();
+            const deposit = new DepositModel({
+                AccountNo: user.AcNumber,
+                balance: 0,
+            });
+
+            await deposit.save();
             const token = await new Token({
                 userId: user._id,
                 token: crypto.randomBytes(32).toString("hex")
             }).save()
             const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
-            
+
             console.log(user.email)
             await sendEmail(user.email, "verify", url)
             res.json({
@@ -145,14 +151,14 @@ registerRouteU.get("/:id/verify/:token", async (req, res) => {
         // Use deleteOne instead of remove
         await Token.deleteOne({
             userId: user._id,
-            token: req.params.token   
+            token: req.params.token
         });
 
-        res.status(200).send({msg:"Email verified successfully "})
+        res.status(200).send({ msg: "Email verified successfully " })
 
     } catch (error) {
-       console.log(error);
-       res.status(500).send({msg:"Internal server Error"})
+        console.log(error);
+        res.status(500).send({ msg: "Internal server Error" })
     }
 })
 module.exports = registerRouteU

@@ -18,18 +18,21 @@ AdminDeposit.post('/', async (req, res) => {
         const existingDeposit = await DepositModel.findOne({ AccountNo });
 
         if (existingDeposit) {
-            // If the deposit entry exists, update the balance
-            existingDeposit.balance += balance;
+            // If the deposit entry exists, create a new one with the updated balance
+            const newDeposit = new DepositModel({
+                AccountNo,
+                balance: existingDeposit.balance + balance
+            });
 
-            // Save the updated deposit entry
-            const updatedDeposit = await existingDeposit.save();
+            // Save the new deposit entry
+            const deposituser = await newDeposit.save();
 
-            return res.status(200).send({ msg: "Amount added successfully", deposituser: updatedDeposit });
+            return res.status(200).send({ msg: "Amount added successfully", deposituser });
         } else {
-            // If the deposit entry doesn't exist, create a new one with initial balance as zero
+            // If the deposit entry doesn't exist, create a new one
             const deposit = new DepositModel({
                 AccountNo,
-                balance: 0 // Initialize balance to zero
+                balance
             });
 
             const deposituser = await deposit.save();
@@ -40,7 +43,6 @@ AdminDeposit.post('/', async (req, res) => {
         return res.status(500).send({ msg: "Error in network", error: error.message });
     }
 });
-
 
 
 
