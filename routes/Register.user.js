@@ -41,7 +41,6 @@ const generateAccountNumber = async () => {
 
 
 
-
 registerRouteU.post('/', async (req, res) => {
     try {
         const {
