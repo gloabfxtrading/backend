@@ -65,17 +65,17 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
         const existingDeposit = await DepositModel.findOne({ AccountNo: accountId });
 
         if (existingDeposit) {
-            // Update the balance by adding the profit
-            existingDeposit.balance += profitToAdd;
+            // You can avoid modifying the balance field if you don't want to update it
+            // existingDeposit.balance += profitToAdd;
 
-            // Save the updated deposit record
-            const updatedDeposit = await existingDeposit.save();
+            // Save the updated deposit record (optional, depending on your use case)
+            // const updatedDeposit = await existingDeposit.save();
 
             // Find the user record based on the account number
             const user = await userModel.findOne({ AcNumber: accountId });
 
             if (user) {
-                // Update the totalbalance in userModel
+                // Update the totalbalance in userModel without modifying the DepositModel
                 user.totalbalance += profitToAdd;
 
                 // Save the updated user record
@@ -83,7 +83,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
             }
 
             return res.status(200).send({
-                AccountNo: updatedDeposit.AccountNo,
+                AccountNo: existingDeposit.AccountNo,
                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
             });
         } else {
@@ -95,6 +95,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" });
     }
 });
+
 
 
 module.exports = ClosedDealRoute;
