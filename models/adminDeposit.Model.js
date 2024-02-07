@@ -9,6 +9,9 @@ const DepositSchema=new mongoose.Schema({
         type: Date,
         default: Date.now, // Set default value to the current timestamp
       }, 
+      type_at:{
+            type:String,default:"deposit"
+      }
 })
 
 const DepositModel=mongoose.model("deposit",DepositSchema)

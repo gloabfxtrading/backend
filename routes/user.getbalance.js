@@ -67,6 +67,7 @@ UserGetRoute.put("/addsub/:id", async (req, res) => {
             const deposit = new DepositModel({
                 AccountNo: accountId,
                 balance: -profitToSubtract, // Negative because it's a subtraction
+                type:"deal"
                 timestamp: new Date(), // You may adjust this based on your timestamp logic
             });
 

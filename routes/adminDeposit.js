@@ -5,7 +5,7 @@ const AdminDeposit=express.Router();
 
 AdminDeposit.post('/', async (req, res) => {
     try {
-        const { AccountNo, balance, created_at } = req.body;
+        const { AccountNo, balance, created_at,type_at } = req.body;
 
         // Check if a user with the given AccountNo exists
         const existingUser = await userModel.findOne({ AcNumber: AccountNo });
@@ -19,6 +19,7 @@ AdminDeposit.post('/', async (req, res) => {
             AccountNo,
             balance,
             created_at,
+            type_at,
         });
 
         // Save the deposit entry
