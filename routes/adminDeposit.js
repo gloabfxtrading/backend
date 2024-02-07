@@ -17,7 +17,8 @@ AdminDeposit.post('/', async (req, res) => {
         // Create a new deposit entry for the user
         const deposit = new DepositModel({
             AccountNo,
-            balance
+            balance,
+            created_at,
         });
 
         // Save the deposit entry

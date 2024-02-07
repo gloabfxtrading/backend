@@ -1,9 +1,10 @@
-const express=require("express");
+const express = require("express");
 const ClosedDealModel = require("../models/ClosedDeal");
 const DepositModel = require("../models/adminDeposit.Model");
+const { userModel } = require("../models/UserModel");
 
 
-const UserGetRoute=express.Router();
+const UserGetRoute = express.Router();
 
 
 UserGetRoute.get("/:id", async (req, res) => {
@@ -19,7 +20,7 @@ UserGetRoute.get("/:id", async (req, res) => {
                 $group: {
                     _id: "$AccountNo",
                     totalBalance: { $sum: "$balance" }, // Assuming your deposit schema has a "balance" field
-                    
+
                 }
             }
         ]);
@@ -28,12 +29,12 @@ UserGetRoute.get("/:id", async (req, res) => {
         if (depositAggregation.length > 0) {
             const { totalBalance } = depositAggregation[0];
             const AccountNo = depositAggregation[0]._id || accountId; // Use accou
-            
+
 
             return res.status(200).send({
                 AccountNo,
                 totalBalance,
-               
+
             });
         } else {
             return res.status(404).send({ msg: "No deposits found for the provided account number" });
@@ -44,36 +45,36 @@ UserGetRoute.get("/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" });
     }
 })
-
-
 UserGetRoute.put("/addsub/:id", async (req, res) => {
     try {
         const accountId = req.params.id;
-        const orderId = req.params.order_id;
-        const profitToAdd = req.body.profit; // Assuming profit is sent in the request body
+        const profitToSubtract = req.body.profit; // Assuming profit is sent in the request body
 
         // Find the user record based on the account number
         const user = await userModel.findOne({ AcNumber: accountId });
 
         if (user) {
-            // Update the totalbalance in userModel
-            user.totalbalance += profitToAdd;
-
+            console.log(user.totalbalance)
+            // Subtract the profit from the totalbalance in userModel
+            user.totalbalance -= profitToSubtract;
+            
             // Save the updated user record
+
+            console.log('Updated Total Balance:', user.totalbalance);
             await user.save();
 
-            // Create a new deposit entry for the user without modifying the existing DepositModel
-            const newDeposit = new DepositModel({
+            // Create a new deposit entry
+            const deposit = new DepositModel({
                 AccountNo: accountId,
-                balance: user.totalbalance, // Use the updated totalbalance
-                order_id: orderId, // You may want to set the order_id here
+                balance: -profitToSubtract, // Negative because it's a subtraction
+                timestamp: new Date(), // You may adjust this based on your timestamp logic
             });
 
             // Save the new deposit entry
-            const deposituser = await newDeposit.save();
-             
+            const newDeposit = await deposit.save();
+
             return res.status(200).send({
-                AccountNo: accountId,
+                AccountNo: newDeposit.AccountNo,
                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
             });
         } else {
@@ -117,7 +118,7 @@ UserGetRoute.put("/addsub/:id", async (req, res) => {
 
 //             // Calculate the new totalBalance and totalBonus
 //             const totalBalance = updatedDeposits.reduce((sum, deposit) => sum + deposit.balance, 0);
-            
+
 
 //             return res.status(200).send({
 //                 AccountNo: accountId,
@@ -136,4 +137,4 @@ UserGetRoute.put("/addsub/:id", async (req, res) => {
 
 
 
-module.exports=UserGetRoute;
+module.exports = UserGetRoute;
