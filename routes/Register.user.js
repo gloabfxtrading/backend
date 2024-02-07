@@ -100,7 +100,8 @@ registerRouteU.post('/', async (req, res) => {
                 userId: user._id,
                 token: crypto.randomBytes(32).toString("hex")
             }).save()
-            const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
+            const url = `Dear user, please click on below link to verify your account
+            ${process.env.BASE_URL}users/${user._id}/verify/${token.token}`
 
             console.log(user.email)
             await sendEmail(user.email, "verify", url)
