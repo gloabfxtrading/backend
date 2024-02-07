@@ -44,32 +44,41 @@ UserGetRoute.get("/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" });
     }
 })
+
+
 UserGetRoute.put("/addsub/:id", async (req, res) => {
     try {
         const accountId = req.params.id;
+        const orderId = req.params.order_id;
         const profitToAdd = req.body.profit; // Assuming profit is sent in the request body
 
-        // Find the deposit record for the specified account
-        const existingDeposit = await DepositModel.findOne({ AccountNo: accountId });
+        // Find the user record based on the account number
+        const user = await userModel.findOne({ AcNumber: accountId });
 
-        if (existingDeposit) {
-            // Update the balance by adding the profit
-            if(existingDeposit===0){
-                existingDeposit = await DepositModel.findOne({ AccountNo: accountId });
-            }
-            existingDeposit.balance -= profitToAdd;
+        if (user) {
+            // Update the totalbalance in userModel
+            user.totalbalance += profitToAdd;
 
-            // Save the updated deposit record
-            const updatedDeposit = await existingDeposit.save();
+            // Save the updated user record
+            await user.save();
 
+            // Create a new deposit entry for the user without modifying the existing DepositModel
+            const newDeposit = new DepositModel({
+                AccountNo: accountId,
+                balance: user.totalbalance, // Use the updated totalbalance
+                order_id: orderId, // You may want to set the order_id here
+            });
+
+            // Save the new deposit entry
+            const deposituser = await newDeposit.save();
+             
             return res.status(200).send({
-                AccountNo: updatedDeposit.AccountNo,
-                totalBalance: updatedDeposit.balance,
+                AccountNo: accountId,
+                totalBalance: user.totalbalance, // Updated totalbalance from userModel
             });
         } else {
-            return res.status(404).send({ msg: "No deposits found for the provided account number" });
+            return res.status(404).send({ msg: "No user found for the provided account number" });
         }
-
     } catch (error) {
         console.log(error);
         return res.status(500).send({ msg: "Error in network" });
