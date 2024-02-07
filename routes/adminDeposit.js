@@ -5,7 +5,7 @@ const AdminDeposit=express.Router();
 
 AdminDeposit.post('/', async (req, res) => {
     try {
-        const { AccountNo, balance } = req.body;
+        const { AccountNo, balance, created_at } = req.body;
 
         // Check if a user with the given AccountNo exists
         const existingUser = await userModel.findOne({ AcNumber: AccountNo });
@@ -14,29 +14,25 @@ AdminDeposit.post('/', async (req, res) => {
             return res.status(404).send({ msg: "User not available" });
         }
 
-        // Check if a deposit entry already exists for the given AccountNo
-        const existingDeposit = await DepositModel.findOne({ AccountNo });
+        // Create a new deposit entry for the user
+        const deposit = new DepositModel({
+            AccountNo,
+            balance
+        });
 
-        if (existingDeposit) {
-            // If the deposit entry exists, create a new one with the updated balance
-            const newDeposit = new DepositModel({
-                AccountNo,
-                balance: existingDeposit.balance + balance
-            });
+        // Save the deposit entry
+        const deposituser = await deposit.save();
 
-            // Save the new deposit entry
-            const deposituser = await newDeposit.save();
+        // Update the totalbalance in userModel
+        const newTotalBalance = existingUser.totalbalance + balance;
+
+        if (newTotalBalance >= 0) {
+            existingUser.totalbalance = newTotalBalance;
+            await existingUser.save();
 
             return res.status(200).send({ msg: "Amount added successfully", deposituser });
         } else {
-            // If the deposit entry doesn't exist, create a new one
-            const deposit = new DepositModel({
-                AccountNo,
-                balance
-            });
-
-            const deposituser = await deposit.save();
-            return res.status(200).send({ msg: "Amount added successfully", deposituser });
+            return res.status(400).send({ msg: "Insufficient funds" });
         }
     } catch (error) {
         console.error(error); // Log the error for debugging purposes
@@ -44,49 +40,6 @@ AdminDeposit.post('/', async (req, res) => {
     }
 });
 
-
-
-
-
-
-AdminDeposit.get("/:id", async (req, res) => {
-    try {
-        const accountId = req.params.id;
-
-        // Aggregate deposits with the same account number
-        const depositAggregation = await DepositModel.aggregate([
-            {
-                $match: { AccountNo: accountId }
-            },
-            {
-                $group: {
-                    _id: "$AccountNo",
-                    totalBalance: { $sum: "$balance" }, // Assuming your deposit schema has a "balance" field
-                   
-                }
-            }
-        ]);
-
-        // Check if there are aggregated results
-        if (depositAggregation.length > 0) {
-            const { totalBalance } = depositAggregation[0];
-            const AccountNo = depositAggregation[0]._id || accountId; // Use accou
-           
-
-            return res.status(200).send({
-                AccountNo,
-                totalBalance,
-                
-            });
-        } else {
-            return res.status(404).send({ msg: "No deposits found for the provided account number" });
-        }
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({ msg: "Error in network" });
-    }
-});
 
   
 
