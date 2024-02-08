@@ -6,6 +6,7 @@ const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto")
 
 const { userModel } = require('../models/UserModel');
+const DepositModel = require('../models/adminDeposit.Model');
 
 
 const generateAccountNumber = async () => {

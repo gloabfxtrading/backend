@@ -75,7 +75,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
             const newDeposit = new DepositModel({
                 AccountNo: accountId,
                 balance: user.totalbalance, // Use the updated totalbalance
-                order_id: orderId, // You may want to set the order_id here
+                type_at: "deal", // You may want to set the order_id here
                 // ... other fields if needed
             });
 
