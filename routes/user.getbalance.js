@@ -58,10 +58,10 @@ UserGetRoute.put("/addsub/:id", async (req, res) => {
             // Subtract the profit from the totalbalance in userModel
             user.totalbalance -= profitToSubtract;
             
-            // Save the updated user record
-
+            // Save the updated user recor
             console.log('Updated Total Balance:', user.totalbalance);
             await user.save();
+
 
             // Create a new deposit entry
             const deposit = new DepositModel({
