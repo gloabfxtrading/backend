@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
     res.send({msg:"base hi api endpoint"})
 })
 
+
 //register post/get for vendor
 
 const  registerRouteU  = require("./routes/Register.user");
