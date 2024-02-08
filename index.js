@@ -11,6 +11,10 @@ const cors = require('cors') ;
 app.use(cors({
     origin:'*'
 }))
+app.use((req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+   
+  });
 
 app.get("/", (req, res) => {
     res.send({msg:"base hi api endpoint"})
