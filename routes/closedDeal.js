@@ -31,9 +31,11 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
             manual_auto,
             closed_at
         })));
-          
+       
         await DealModel.deleteMany({ dealer_id: id, order_id: order_id });
-        return res.status(200).json({ msg: "Closed deals added successfully", closedDeals });
+        const firstClosedDeal = closedDeals.length > 0 ? closedDeals[0] : {};
+        const { order_profit: addedOrderProfit } = firstClosedDeal;
+        return res.status(200).json({ msg: "Closed deals added successfully", order_profit: addedOrderProfit });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ msg: "Error in processing closed deals" });
