@@ -3,6 +3,8 @@ const { userModel } = require("../models/UserModel");
 const DepositModel = require("../models/adminDeposit.Model");
 const AdminDeposit=express.Router();
 
+
+
 AdminDeposit.post('/', async (req, res) => {
     try {
         const { AccountNo, balance, created_at,type_at } = req.body;
