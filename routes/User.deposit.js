@@ -16,15 +16,17 @@ const upload = multer({ storage })
 
 UserDepositRoute.post('/addDetail/:id', async (req, res) => {
   const { code, amount, Image } = req.body;
-  let user = await UserDepositModel.find({ AcNumber: req.params.id })
+  let user = await UserDepositModel.findOne({ AcNumber: req.params.id })
+  console.log(user.AcNumber)
   const newItem = new UserDepositModel({
 
     AcNumber: user.AcNumber,
     code, amount, Image
   })
   try {
+   
     await newItem.save();
-    res.send({ msg: 'added successfully....' })
+    res.send({ msg: 'added successfully....',newItem })
   } catch (err) {
     console.log(err)
     res.send({msg:'Error unable to upload product'})
