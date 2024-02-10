@@ -60,11 +60,12 @@ UserDepositRoute.post('/upload', upload.single('Image'), async (req, res) => {
 
 
 
-UserDepositRoute.get("/", async (req, res) => {
+UserDepositRoute.get("/:id", async (req, res) => {
   try {
-    let deposit = await UserDepositModel.find()
+    let deposit = await UserDepositModel.find({AcNumber:req.params.id})
+    return res.status(200).send(deposit)
   } catch (error) {
-
+    return res.status(500).send({msg:"unable to get"})
   }
 })
 module.exports = UserDepositRoute;
