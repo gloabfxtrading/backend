@@ -16,7 +16,8 @@ const upload = multer({ storage })
 
 UserDepositRoute.post('/addDetail/:id', async (req, res) => {
   const { code, amount, Image } = req.body;
-  let user = await UserDepositModel.findOne({ AcNumber: req.params.id })
+  let user = await userModel.findOne({ AcNumber: req.params.id })
+  console.log(user)
   console.log(user.AcNumber)
   const newItem = new UserDepositModel({
 
