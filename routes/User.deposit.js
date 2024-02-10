@@ -14,9 +14,13 @@ cloudinary.config({
 const storage=multer.memoryStorage();
 const upload=multer({storage})
 
-UserDepositRoute.post('/addDetail', async(req, res)=>{
+UserDepositRoute.post('/addDetail/:id', async(req, res)=>{
     const {code, amount, Image}=req.body;
-    const newItem=new UserDepositModel({code, amount,Image})
+    let user=await UserDepositModel.find({AcNumber:req.params.id})
+    const newItem=new UserDepositModel({
+
+      AcNumber:user.AcNumber,
+      code, amount,Image})
     try{
       await newItem.save();
       res.send({msg:'added successfully....'})
@@ -49,4 +53,14 @@ UserDepositRoute.post('/upload', upload.single('Image'), async(req, res)=>{
     res.json({ message: "Error: " + error.message });
   }
 });
+
+
+
+UserDepositRoute.get("/",async(req,res)=>{
+  try {
+    let deposit=await UserDepositModel.find()
+  } catch (error) {
+    
+  }
+})
 module.exports = UserDepositRoute;
