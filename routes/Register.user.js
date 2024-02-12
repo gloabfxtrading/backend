@@ -137,6 +137,36 @@ registerRouteU.get('/:userID', async (req, res) => {
 
 
 
+registerRouteU.put('/:userID', async (req, res) => {
+    try {
+        const { newData } = req.body;
+
+        // Update the user data in the database
+        const updatedUser = await userModel.findOneAndUpdate(
+            { AcNumber: req.params.userID },
+            { $set: newData },
+            { new: true }
+        );
+
+        if (updatedUser) {
+            return res.status(200).send({
+                msg: "User data updated successfully",
+                user: updatedUser
+            });
+        } else {
+            return res.status(404).send({
+                msg: "User not found"
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            msg: "Error in updating user data"
+        });
+    }
+});
+
+
 registerRouteU.get("/:id/verify/:token", async (req, res) => {
     try {
         const user = await userModel.findOne({ _id: req.params.id })

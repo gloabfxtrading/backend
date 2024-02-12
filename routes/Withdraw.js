@@ -92,11 +92,11 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
         await withdraw.save();
 
         if (status === "approved") {
-            const existingDeposit = await DepositModel.findOne({ AccountNo: withdraw.IDNumber });
+            const existingDeposit = await userModel.findOne({ AcNumber: withdraw.IDNumber });
 
             if (existingDeposit) {
-                if (existingDeposit.balance >= withdraw.withdraw_money) {
-                    existingDeposit.balance -= withdraw.withdraw_money;
+                if (existingDeposit.totalbalance >= withdraw.withdraw_money) {
+                    existingDeposit.totalbalance -= withdraw.withdraw_money;
 
                     // Save the updated deposit
                     await existingDeposit.save();
@@ -108,9 +108,9 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
             }
         }
         else if(status==="rejected"){
-            const existingDeposit = await DepositModel.findOne({ AccountNo: withdraw.IDNumber });
+            const existingDeposit = await userModel.findOne({ AccountNo: withdraw.IDNumber });
             if(existingDeposit){
-                if (existingDeposit.balance <= withdraw.withdraw_money){
+                if (existingDeposit.totalbalance <= withdraw.withdraw_money){
                     await existingDeposit.save();
                 } else {
                     return res.status(400).send({ msg: 'Insufficient balance in the account' });

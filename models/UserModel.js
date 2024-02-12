@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
     leverage: { type: String, required: [true, "leverage is required"] },
     AcNumber: { type: String, required: [true, "AcNumber is required"], unique: true },
     totalbalance:{type:Number,default:0},
-    verified:{type:Boolean,default:false}
+    verified:{type:Boolean,default:false},
+    verification_status:{type:Boolean,default:false}
 })
 
 

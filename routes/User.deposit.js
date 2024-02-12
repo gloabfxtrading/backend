@@ -58,11 +58,26 @@ UserDepositRoute.post('/upload', upload.single('Image'), async (req, res) => {
   }
 });
 
-
+UserDepositRoute.put("/:id",async(req,res)=>{
+  try {
+    const {type_at}=req.body;
+    const accountId=req.params.id;
+    const deposit=await UserDepositModel.find({_id:accountId})
+     deposit.type_at=type_at;
+     await deposit.save();
+    
+  } catch (error) {
+    
+  }
+})
 
 UserDepositRoute.get("/:id", async (req, res) => {
   try {
-    let deposit = await UserDepositModel.find({AcNumber:req.params.id})
+    if(req.params.id==="admin"){
+      let deposit = await UserDepositModel.find({})
+      return res.status(200).send(deposit)
+    }
+    let deposit = await UserDepositModel.findOne({AcNumber:req.params.id})
     return res.status(200).send(deposit)
   } catch (error) {
     return res.status(500).send({msg:"unable to get"})
