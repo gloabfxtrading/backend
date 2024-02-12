@@ -15,9 +15,13 @@ const userSchema = new mongoose.Schema({
     account_type: { type: String, required: [true, "acount_type is required"] },
     leverage: { type: String, required: [true, "leverage is required"] },
     AcNumber: { type: String, required: [true, "AcNumber is required"], unique: true },
-    totalbalance:{type:Number,default:0},
+    totalbalance:{type:Number,default:0.00},
     verified:{type:Boolean,default:false},
-    verification_status:{type:Boolean,default:false}
+    verification_status:{type:Boolean,default:false},
+    created_at: {
+        type: Date,
+        default: Date.now, // Set default value to the current timestamp
+      }, 
 })
 
 

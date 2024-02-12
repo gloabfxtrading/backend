@@ -19,16 +19,17 @@ AdminDeposit.post('/', async (req, res) => {
         // Create a new deposit entry for the user
         const deposit = new DepositModel({
             AccountNo,
-            balance,
+            balance
            
         });
 
         // Save the deposit entry
         const deposituser = await deposit.save();
+     console.log(balance)
 
         // Update the totalbalance in userModel
-        const newTotalBalance = existingUser.totalbalance + balance;
-
+        const newTotalBalance =parseFloat( existingUser.totalbalance) + parseFloat(balance);
+            console.log(newTotalBalance)
         if (newTotalBalance >= 0) {
             existingUser.totalbalance = newTotalBalance;
             await existingUser.save();

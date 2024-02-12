@@ -79,6 +79,10 @@ app.use("/file", UserDepositRoute);
 const changePasswordRoutes = require("./routes/ChangePassword");
 app.use("/changepassword", changePasswordRoutes);
 
+
+const DocumentVerifyRoute = require("./routes/DocumentVerify");
+app.use("/verify", DocumentVerifyRoute);
+
 const port = process.env.PORT;
 app.listen(port, async () => {
     try {

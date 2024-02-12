@@ -124,6 +124,10 @@ registerRouteU.post('/', async (req, res) => {
 
 registerRouteU.get('/:userID', async (req, res) => {
     try {
+        if(req.params.userID==="admin"){
+            const user = await userModel.find({ });
+        return res.status(200).send(user);
+        }
         const user = await userModel.findOne({ AcNumber: req.params.userID });
         return res.status(200).send(user);
     }
@@ -139,12 +143,12 @@ registerRouteU.get('/:userID', async (req, res) => {
 
 registerRouteU.put('/:userID', async (req, res) => {
     try {
-        const { newData } = req.body;
+        const newData = req.body;
 
         // Update the user data in the database
         const updatedUser = await userModel.findOneAndUpdate(
             { AcNumber: req.params.userID },
-            { $set: newData },
+            newData, // Directly pass newData to $set
             { new: true }
         );
 
@@ -165,6 +169,8 @@ registerRouteU.put('/:userID', async (req, res) => {
         });
     }
 });
+
+
 
 
 registerRouteU.get("/:id/verify/:token", async (req, res) => {
