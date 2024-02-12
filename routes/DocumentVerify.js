@@ -58,4 +58,46 @@ DocumentVerifyRoute.post('/upload', upload.single('Image'), async (req, res) => 
   }
 });
 
+
+
+
+DocumentVerifyRoute.get("/:id", async (req, res) => {
+    try {
+      if (req.params.id === "admin") {
+        let deposit = await DocumentModel.find({})
+        return res.status(200).send(deposit)
+      }
+      let deposit = await DocumentModel.findOne({ AcNumber: req.params.id })
+      return res.status(200).send(deposit)
+    } catch (error) {
+      return res.status(500).send({ msg: "unable to get" })
+    }
+  })
+
+
+  DocumentVerifyRoute.put("/putfile/:id", async (req, res) => {
+    try {
+      const { type_at } = req.body;
+      const accountId = req.params.id;
+      
+      // Use findOne instead of find to get a single document
+      const deposit = await DocumentModel.findOne({ _id: accountId });
+  
+      if (deposit) {
+        // Update the property in the document
+        deposit.type_at = type_at;
+  
+        // Use save to update the document
+        await deposit.save();
+  
+        return res.status(200).send({ msg: "done successfully", deposit });
+      } else {
+        return res.status(404).send({ msg: "Document not found" });
+      }
+  
+    } catch (error) {
+      return res.status(500).send({ msg: "error" });
+    }
+  });
+  
 module.exports=DocumentVerifyRoute

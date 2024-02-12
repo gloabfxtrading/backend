@@ -56,7 +56,7 @@ UserGetRoute.put("/addsub/:id", async (req, res) => {
         if (user) {
             console.log(user.totalbalance)
             // Subtract the profit from the totalbalance in userModel
-            user.totalbalance -= profitToSubtract;
+            user.totalbalance -= parseFloat(profitToSubtract);
             
             // Save the updated user recor
             console.log('Updated Total Balance:', user.totalbalance);
