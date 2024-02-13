@@ -144,14 +144,14 @@ registerRouteU.get('/:userID', async (req, res) => {
 registerRouteU.put('/:userID', async (req, res) => {
     try {
         const newData = req.body;
-
+         console.log(newData);
         // Update the user data in the database
         const updatedUser = await userModel.findOneAndUpdate(
             { AcNumber: req.params.userID },
             newData, // Directly pass newData to $set
             { new: true }
         );
-
+          
         if (updatedUser) {
             return res.status(200).send({
                 msg: "User data updated successfully",

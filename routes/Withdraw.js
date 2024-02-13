@@ -39,14 +39,14 @@ const generateAccountNumber = async () => {
 
 WithdrawRequestRoute.post('/:id/:account_number', async (req, res) => {
     try {
-        const { withdraw_id,withdraw_money, remarks, status,created_at } = req.body;
-        const user = await BankModel.findOne({ IDNumber: req.params.id ,account_number:req.params.account_number});
+        const { withdraw_id, withdraw_money, remarks, status, created_at } = req.body;
+        const user = await BankModel.findOne({ IDNumber: req.params.id, account_number: req.params.account_number });
         //    const existingDeposit=await DepositModel.findOne({AccountNo:req.params.id})
-       
+
         const withdrawAccount = await generateAccountNumber();
         console.log(withdrawAccount)
         console.log('Before WithdrawModel.create');
-        const new_withdraw = new WithdrawModel({          
+        const new_withdraw = new WithdrawModel({
             IDNumber: user.IDNumber,
             nick_name: user.nick_name,
             full_name: user.full_name,
@@ -107,14 +107,14 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
                 return res.status(404).send({ msg: 'Deposit not found for the user' });
             }
         }
-        else if(status==="rejected"){
+        else if (status === "rejected") {
             const existingDeposit = await userModel.findOne({ AccountNo: withdraw.IDNumber });
-            if(existingDeposit){
-                if (existingDeposit.totalbalance <= withdraw.withdraw_money){
+            if (existingDeposit) {
+                if (existingDeposit.totalbalance <= withdraw.withdraw_money) {
                     await existingDeposit.save();
                 } else {
                     return res.status(400).send({ msg: 'Insufficient balance in the account' });
-                } 
+                }
             }
         }
 
@@ -126,13 +126,17 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
 });
 
 
-WithdrawRequestRoute.get('/:id',async(req,res)=>{
+WithdrawRequestRoute.get('/:id', async (req, res) => {
     try {
-        AccountNo=req.params.id;
-        const withdraw=await WithdrawModel.find({IDNumber:AccountNo});
+        if (req.params.id === "admin") {
+            const withdraw = await WithdrawModel.find({ IDNumber: AccountNo });
+            return res.status(200).send(withdraw);
+        }
+        AccountNo = req.params.id;
+        const withdraw = await WithdrawModel.find({ IDNumber: AccountNo });
         return res.status(200).send(withdraw);
     } catch (error) {
-        return res.status(404).send({msg:"Unable to fetch withdraw Details"});
+        return res.status(404).send({ msg: "Unable to fetch withdraw Details" });
     }
 })
 
