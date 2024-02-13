@@ -44,9 +44,40 @@ changePasswordRoutes.post('/:id', async (req, res) => {
         });
     }
 });
+changePasswordRoutes.post('/', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        // Check if the email exists in the userModel
+        const user = await userModel.findOne({ email });
+
+        console.log('Email:', email);
+        console.log('User:', user);
+
+        if (user) {
+            // Hash the new password
+            const hash = await bcrypt.hash(newPassword, 10); // Use a higher saltRounds value
+
+            // Update the hashed password in the database
+            await userModel.updateOne({ email }, { password: hash });
+
+            res.status(200).json({
+                msg: 'Password updated successfully'
+            });
+        } else {
+            res.status(400).json({
+                msg: 'User not found'
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            msg: 'Failed to update password',
+            error: error.message
+        });
+    }
+});
 
 module.exports = changePasswordRoutes;
 
 
-
-module.exports=changePasswordRoutes

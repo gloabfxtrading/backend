@@ -83,6 +83,10 @@ app.use("/changepassword", changePasswordRoutes);
 const DocumentVerifyRoute = require("./routes/DocumentVerify");
 app.use("/verify", DocumentVerifyRoute);
 
+
+const ForgetPass = require("./routes/forgetPassword");
+app.use("/forget", ForgetPass);
+
 const port = process.env.PORT;
 app.listen(port, async () => {
     try {
