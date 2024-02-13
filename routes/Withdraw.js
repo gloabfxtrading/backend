@@ -129,7 +129,7 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
 WithdrawRequestRoute.get('/:id', async (req, res) => {
     try {
         if (req.params.id === "admin") {
-            const withdraw = await WithdrawModel.find({ IDNumber: AccountNo });
+            const withdraw = await WithdrawModel.find({  });
             return res.status(200).send(withdraw);
         }
         AccountNo = req.params.id;
