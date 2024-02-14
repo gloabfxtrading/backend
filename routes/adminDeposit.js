@@ -30,11 +30,11 @@ AdminDeposit.post('/', async (req, res) => {
 
         // Update the totalbalance in userModel
         const newTotalBalance =parseFloat( existingUser.totalbalance) + parseFloat(balance);
-        const neteq=parseFloat( existingUser.net) + parseFloat(balance)
+        const newneteq=parseFloat( existingUser.neteq) + parseFloat(balance)
             console.log(newTotalBalance)
         if (newTotalBalance >= 0) {
             existingUser.totalbalance = newTotalBalance;
-            existingUser.net=neteq
+            existingUser.neteq=newneteq
             await existingUser.save();
 
             return res.status(200).send({ msg: "Amount added successfully", deposituser });

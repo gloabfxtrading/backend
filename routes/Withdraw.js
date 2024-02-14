@@ -97,7 +97,7 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
             if (existingDeposit) {
                 if (existingDeposit.totalbalance >= withdraw.withdraw_money) {
                     existingDeposit.totalbalance -= withdraw.withdraw_money;
-
+                    
                     // Save the updated deposit
                     await existingDeposit.save();
                 } else {
