@@ -68,7 +68,8 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
 
         if (user) {
             // Update the totalbalance in userModel
-            user.totalbalance += profitToAdd;
+            user.totalbalance += parseFloat(profitToAdd);
+            user.net+=parseFloat(profitToAdd);
 
             // Save the updated user record
             await user.save();
@@ -87,6 +88,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
             return res.status(200).send({
                 AccountNo: accountId,
                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
+                net:user.net
             });
         } else {
             return res.status(404).send({ msg: "No user found for the provided account number" });

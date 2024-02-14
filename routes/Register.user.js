@@ -45,7 +45,7 @@ const generateAccountNumber = async () => {
 registerRouteU.post('/', async (req, res) => {
     try {
         const {
-            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage,totalbalance
+            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage,totalbalance,net
         } = req.body;
 
         const accountNumber = await generateAccountNumber();
@@ -73,6 +73,7 @@ registerRouteU.post('/', async (req, res) => {
                 account_type,
                 leverage,
                 totalbalance,
+                net,
                 AcNumber: accountNumber,
             });
 
