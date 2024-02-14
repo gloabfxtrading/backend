@@ -11,7 +11,7 @@ const DepositSchema=new mongoose.Schema({
         default: Date.now, // Set default value to the current timestamp
       }, 
       type_at:{
-            type:String,default:"deposit"
+            type:String,required:true
       }
 })
 
