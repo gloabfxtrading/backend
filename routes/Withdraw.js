@@ -95,8 +95,9 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
             const existingDeposit = await userModel.findOne({ AcNumber: withdraw.IDNumber });
 
             if (existingDeposit) {
-                if (existingDeposit.totalbalance >= withdraw.withdraw_money) {
+                if (existingDeposit.neteq >= withdraw.withdraw_money) {
                     existingDeposit.totalbalance -= withdraw.withdraw_money;
+                    existingDeposit.neteq -= withdraw.withdraw_money;
                     
                     // Save the updated deposit
                     await existingDeposit.save();
