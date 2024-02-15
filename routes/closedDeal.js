@@ -3,6 +3,7 @@ const ClosedDealRoute = express.Router();
 const DealModel = require("../models/Deal");
 const ClosedDealModel = require("../models/ClosedDeal");
 const DepositModel = require("../models/adminDeposit.Model");
+const { userModel } = require("../models/UserModel");
 
 ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
     try {
@@ -60,7 +61,7 @@ ClosedDealRoute.get("/:id",async(req,res)=>{
 ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
     try {
         const accountId = req.params.id;
-        const orderId = req.params.order_id;
+        // const orderId = req.params.order_id;
         const profitToAdd = req.body.profit; // Assuming profit is sent in the request body
 
         // Find the user record based on the account number
@@ -88,7 +89,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
             return res.status(200).send({
                 AccountNo: accountId,
                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
-                net:user.net
+                neteq:user.neteq
             });
         } else {
             return res.status(404).send({ msg: "No user found for the provided account number" });
