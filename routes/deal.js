@@ -39,9 +39,23 @@ const generateAccountNumber = async () => {
 
 dealRoute.post('/', async (req, res) => {
     try {
-        const { dealer_id,order_type, title, lotsize, created_at, bidorask, takeprofit, stoploss,price ,pip} = req.body
+        const {
+            dealer_id,
+            order_type,
+            title,
+            lotsize,
+            created_at,
+            bidorask,
+            takeprofit,
+            stoploss,
+            price,
+            pip
+        } = req.body;
+
+        // Assuming generateAccountNumber is a function that generates a unique account number
         const accountNumber = await generateAccountNumber();
-        const new_user = new DealModel({
+
+        const newDeal = new DealModel({
             order_id: accountNumber,
             dealer_id,
             order_type,
@@ -49,19 +63,21 @@ dealRoute.post('/', async (req, res) => {
             lotsize,
             created_at,
             bidorask,
-            takeprofit: takeprofit || null, // Use provided value or set to null
+            takeprofit: takeprofit || null,
             stoploss: stoploss || null,
             price,
             pip
         });
-        let user = await new_user.save();
-        return res.status(200).send({ msg: "deal added sucessfully", user });
+
+        const savedDeal = await newDeal.save();
+
+        return res.status(200).send({ msg: "Deal added successfully", deal: savedDeal });
     } catch (error) {
-        return res.status(500).send({
-            msg: "Error In Deal"
-        });
+        console.error("Error in Deal POST request:", error);
+        return res.status(500).send({ msg: "Error in Deal" });
     }
-})
+});
+
 
 
 dealRoute.get('/:id', async (req, res) => {
