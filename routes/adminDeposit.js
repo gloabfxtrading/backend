@@ -67,15 +67,13 @@ AdminDeposit.post('/', async (req, res) => {
         const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance);
         const newneteq = parseFloat(existingUser.neteq) + parseFloat(balance)
         console.log(newTotalBalance)
-        if (newTotalBalance >= 0) {
+        
             existingUser.totalbalance = newTotalBalance;
             existingUser.neteq = newneteq
             await existingUser.save();
             sendVerificationEmail(existingUser.first_name, existingUser.last_name, balance, deposituser.created_at, existingUser.email);
             return res.status(200).send({ msg: "Amount added successfully", deposituser });
-        } else {
-            return res.status(400).send({ msg: "Insufficient funds" });
-        }
+       
     } catch (error) {
         console.error(error); // Log the error for debugging purposes
         return res.status(500).send({ msg: "Error in network", error: error.message });
