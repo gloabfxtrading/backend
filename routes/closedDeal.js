@@ -69,7 +69,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
         if (user) {
             // Update the totalbalance in userModel
             user.totalbalance += parseFloat(profitToAdd);
-            user.netEq+=parseFloat(profitToAdd);
+            user.neteq+=parseFloat(profitToAdd);
 
             // Save the updated user record
             await user.save();
