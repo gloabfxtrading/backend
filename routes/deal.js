@@ -49,7 +49,8 @@ dealRoute.post('/', async (req, res) => {
             takeprofit,
             stoploss,
             price,
-            pip
+            pip,
+            changecurr
         } = req.body;
 
         // Assuming generateAccountNumber is a function that generates a unique account number
@@ -66,7 +67,8 @@ dealRoute.post('/', async (req, res) => {
             takeprofit: takeprofit || null,
             stoploss: stoploss || null,
             price,
-            pip
+            pip,
+            changecurr
         });
 
         const savedDeal = await newDeal.save();
