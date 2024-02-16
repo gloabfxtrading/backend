@@ -4,6 +4,7 @@ const DealModel = require("../models/Deal");
 const ClosedDealModel = require("../models/ClosedDeal");
 const DepositModel = require("../models/adminDeposit.Model");
 const { userModel } = require("../models/UserModel");
+const authentication=require("../middlewares/authenication")
 
 ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
     try {
@@ -42,20 +43,6 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
         return res.status(500).json({ msg: "Error in processing closed deals" });
     }
 });
-
-ClosedDealRoute.get("/:id",async(req,res)=>{
-    try {
-        const {id}=req.params;
-
-        const deals=await ClosedDealModel.find({dealer_id:id})
-        return res.status(200).send(deals)
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({msg:"Error while fetching deals"})
-    }
-   
-
-})
 
 
 ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
@@ -99,6 +86,25 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" });
     }
 });
+
+ClosedDealRoute.use(authentication);
+
+ClosedDealRoute.get("/:id",async(req,res)=>{
+    try {
+        const {id}=req.params;
+
+        const deals=await ClosedDealModel.find({dealer_id:id})
+        return res.status(200).send(deals)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg:"Error while fetching deals"})
+    }
+   
+
+})
+
+
+
 
 
 

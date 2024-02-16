@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const { userModel } = require("../models/UserModel");
 const DepositModel = require("../models/adminDeposit.Model");
 const AdminDeposit = express.Router();
+const authentication=require("../middlewares/authenication")
 
 async function sendVerificationEmail(first, last, balance, created_at, email) {
     // Create a Nodemailer transporter
@@ -39,6 +40,7 @@ async function sendVerificationEmail(first, last, balance, created_at, email) {
     let info = await transporter.sendMail(mailOptions);
     console.log('Email sent: ', info.messageId);
 }
+
 
 AdminDeposit.post('/', async (req, res) => {
     try {
@@ -82,7 +84,7 @@ AdminDeposit.post('/', async (req, res) => {
 
 
 
-
+AdminDeposit.use(authentication)
 AdminDeposit.get("/:id", async (req, res) => {
     try {
         if (req.params.id === "asdf1234") {
