@@ -4,22 +4,15 @@ const express = require("express");
 const { connection } = require('./config/db');
 
 require("dotenv").config();
-const fileUpload = require("express-fileupload");
+const fileUpload=require("express-fileupload");
 const app = express();
 app.use(express.json());
 
 
-
-
 const cors = require('cors');
-const corsOptions = {
-    origin: 'http://trader.gloabfx.com', // Replace with the actual origin of your client app
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204,
-};
-
-app.options('*', cors(corsOptions));
+app.use(cors({
+    origin: '*'
+}))
 // app.use("/public/images",express.static("/public/images"))
 // app.use((req, res) => {
 //     res.setHeader("Access-Control-Allow-Origin", "*");
