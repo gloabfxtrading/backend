@@ -93,12 +93,12 @@ registerRouteU.post('/', async (req, res) => {
             }
 
             user = await new_user.save();
-            const deposit = new DepositModel({
-                AccountNo: user.AcNumber,
-                balance: 0,
-            });
+            // const deposit = new DepositModel({
+            //     AccountNo: user.AcNumber,
+            //     balance: 0,
+            // });
 
-            await deposit.save();
+            // await deposit.save();
             const token = await new Token({
                 userId: user._id,
                 token: crypto.randomBytes(32).toString("hex")
@@ -114,7 +114,7 @@ registerRouteU.post('/', async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(500).send({
+        res.status(502).send({
             msg: 'Not registered, please try again',
         });
     }
