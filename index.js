@@ -9,17 +9,17 @@ const app = express();
 app.use(express.json());
 
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://trader.gloabfx.com');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
+
 
 const cors = require('cors');
-app.use(cors({
-    origin: '*'
-}))
+const corsOptions = {
+    origin: 'http://trader.gloabfx.com/', // Replace with the actual origin of your client app
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 // app.use("/public/images",express.static("/public/images"))
 // app.use((req, res) => {
 //     res.setHeader("Access-Control-Allow-Origin", "*");
