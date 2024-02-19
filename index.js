@@ -19,7 +19,7 @@ const corsOptions = {
     optionsSuccessStatus: 204,
 };
 
-app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 // app.use("/public/images",express.static("/public/images"))
 // app.use((req, res) => {
 //     res.setHeader("Access-Control-Allow-Origin", "*");
