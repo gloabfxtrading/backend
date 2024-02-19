@@ -4,9 +4,17 @@ const express = require("express");
 const { connection } = require('./config/db');
 
 require("dotenv").config();
-const fileUpload=require("express-fileupload");
+const fileUpload = require("express-fileupload");
 const app = express();
 app.use(express.json());
+
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://trader.gloabfx.com');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 
 const cors = require('cors');
 app.use(cors({
