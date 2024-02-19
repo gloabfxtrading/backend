@@ -2,10 +2,10 @@ const express = require("express");
 const dealRoute = express.Router();
 const bcrypt = require("bcrypt");
 
-const ClosedDealModel=require("../models/ClosedDeal")
+const ClosedDealModel = require("../models/ClosedDeal")
 const DealModel = require("../models/Deal");
 
-const {userModel} =require("../models/UserModel")
+const { userModel } = require("../models/UserModel")
 
 
 const generateAccountNumber = async () => {
@@ -52,7 +52,8 @@ dealRoute.post('/', async (req, res) => {
             pip,
             changecurr
         } = req.body;
-
+        const part1 = title.substring(0, 3); // Get the first 3 characters (EUR)
+        const part2 = title.substring(3);    // Get the remaining characters (USD)
         // Assuming generateAccountNumber is a function that generates a unique account number
         const accountNumber = await generateAccountNumber();
 
@@ -60,7 +61,7 @@ dealRoute.post('/', async (req, res) => {
             order_id: accountNumber,
             dealer_id,
             order_type,
-            title,
+            title: part1 + '/' + part2,
             lotsize,
             created_at,
             bidorask,
@@ -84,8 +85,8 @@ dealRoute.post('/', async (req, res) => {
 
 dealRoute.get('/:id', async (req, res) => {
     try {
-         let deal=await DealModel.find({dealer_id:req.params.id})
-         return res.status(200).send(deal)
+        let deal = await DealModel.find({ dealer_id: req.params.id })
+        return res.status(200).send(deal)
     } catch (error) {
         return res.status(500).send({
             msg: "Error while Deal"
@@ -102,7 +103,7 @@ dealRoute.get('/:id/dealprice', async (req, res) => {
             },
             {
                 $group: {
-                    _id:null,
+                    _id: null,
                     total_price: { $sum: "$price" }
                 }
             }
@@ -111,7 +112,7 @@ dealRoute.get('/:id/dealprice', async (req, res) => {
         // Check if there are deals for the provided dealer_id
         if (result.length === 0) {
             return res.status(404).send({
-                total_price:0
+                total_price: 0
             });
         }
 
@@ -128,13 +129,13 @@ dealRoute.get('/:id/dealprice', async (req, res) => {
 });
 
 
-dealRoute.get("/singledeal/:id",async(req,res)=>{
+dealRoute.get("/singledeal/:id", async (req, res) => {
     try {
-        const user=await DealModel.findOne({order_id:req.params.id})
+        const user = await DealModel.findOne({ order_id: req.params.id })
         return res.status(200).send(user)
     } catch (error) {
         console.log(error)
-        return res.status(500).send({msg:"Error while fetching"})
+        return res.status(500).send({ msg: "Error while fetching" })
     }
 })
 
