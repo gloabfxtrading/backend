@@ -13,7 +13,7 @@ app.use(express.json());
 
 const cors = require('cors');
 const corsOptions = {
-    origin: 'http://trader.gloabfx.com/', // Replace with the actual origin of your client app
+    origin: 'http://trader.gloabfx.com', // Replace with the actual origin of your client app
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204,
