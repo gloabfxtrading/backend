@@ -1,6 +1,3 @@
-
-
-
 const express=require("express");
 const AdminModel=require('../models/Admin.Model');
 const AdminRouteRegister=express.Router();

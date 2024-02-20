@@ -173,6 +173,32 @@ registerRouteU.put('/:userID', async (req, res) => {
 
 
 
+registerRouteU.delete('/:userID', async (req, res) => {
+    try {
+        // Delete the user data from the database
+        const deletedUser = await userModel.findOneAndDelete({ AcNumber: req.params.userID });
+
+        if (deletedUser) {
+            return res.status(200).send({
+                msg: "User deleted successfully",
+                user: deletedUser
+            });
+        } else {
+            return res.status(404).send({
+                msg: "User not found"
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            msg: "Error in deleting user"
+        });
+    }
+});
+
+
+
+
 
 registerRouteU.get("/:id/verify/:token", async (req, res) => {
     try {
