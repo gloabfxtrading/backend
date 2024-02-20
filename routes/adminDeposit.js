@@ -44,7 +44,7 @@ async function sendVerificationEmail(first, last, balance, created_at, email) {
 
 AdminDeposit.post('/', async (req, res) => {
     try {
-        const { AccountNo, balance, type_at } = req.body;
+        const { AccountNo, balance, type_at,bonus } = req.body;
 
         // Check if a user with the given AccountNo exists
         const existingUser = await userModel.findOne({ AcNumber: AccountNo });
@@ -57,6 +57,7 @@ AdminDeposit.post('/', async (req, res) => {
         const deposit = new DepositModel({
             AccountNo,
             balance,
+            bonus,
             type_at: "deposit"
 
         });
@@ -66,7 +67,7 @@ AdminDeposit.post('/', async (req, res) => {
         console.log(balance)
 
         // Update the totalbalance in userModel
-        const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance);
+        const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance)+parseFloat(bonus);
         const newneteq = parseFloat(existingUser.neteq) + parseFloat(balance)
         console.log(newTotalBalance)
         
