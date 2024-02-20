@@ -90,7 +90,7 @@ UserDepositRoute.get("/:id", async (req, res) => {
       let deposit = await UserDepositModel.find({})
       return res.status(200).send(deposit)
     }
-    let deposit = await UserDepositModel.findOne({ AcNumber: req.params.id })
+    let deposit = await UserDepositModel.find({ AcNumber: req.params.id })
     return res.status(200).send(deposit)
   } catch (error) {
     return res.status(500).send({ msg: "unable to get" })
