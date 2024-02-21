@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     default: Date.now, // Set default value to the current timestamp
   },
   neteq: { type: Number, default: 0.00 },
+  bonus:{type:Number,default:0.00},
   otp: String,
   otpTimestamp: Date,
 })
