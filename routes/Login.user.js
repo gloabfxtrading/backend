@@ -52,6 +52,44 @@ LoginVRoutes.post('/', async (req, res) => {
 });
 
 
+LoginVRoutes.post('/user', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if the email exists in either vendorModel or userModel
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                msg: 'User not found. Please check your email.',
+            });
+        }
+
+        const hashed_password = user.password; // Assuming you want to compare with the hashed password stored in the database
+
+        if (password === hashed_password) {
+            const token = jwt.sign({ _id: user._id, userType: user }, process.env.SECRET_KEY);
+
+            return res.status(200).json({
+                msg: `Login successfully `,
+                type: user,
+                token: token,
+            });
+        } else {
+            return res.status(400).json({
+                msg: 'Wrong password. Please try again later.',
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            msg: "Login failed, Invalid credentials"
+        });
+    }
+});
+
+
+
 
 
 
