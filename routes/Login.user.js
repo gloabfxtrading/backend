@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const { userModel } = require('../models/UserModel');
 const Token = require('../models/token');
+const AdminModel = require('../models/Admin.Model');
 
 
 LoginVRoutes.post('/', async (req, res) => {
@@ -15,7 +16,8 @@ LoginVRoutes.post('/', async (req, res) => {
         // Check if the email exists in either vendorModel or userModel
 
         const user = await userModel.findOne({ email });
-        const model = user
+        const admin = await AdminModel.findOne({ email });
+        const model = user || admin
         const hashed_password = model.password;
         const result = await bcrypt.compare(password, hashed_password);
         if (!user) {
