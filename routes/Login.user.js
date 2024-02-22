@@ -32,7 +32,7 @@ LoginVRoutes.post('/', async (req, res) => {
             }
         }
         if (result) {
-            const token = jwt.sign({ _id: model._id, userType: user }, process.env.SECRET_KEY);
+            const token = jwt.sign({ _id: model._id, userType: user ? user:admin}, process.env.SECRET_KEY);
 
             return res.status(200).json({
                 msg: `Login successfully `,
