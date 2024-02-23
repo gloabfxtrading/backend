@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
   totalbalance: { type: Number, default: 0.00 },
   verified: { type: Boolean, default: false },
   verification_status: { type: Boolean, default: false },
+  type:{type:String,default:"user"},
   created_at: {
     type: Date,
     default: Date.now, // Set default value to the current timestamp

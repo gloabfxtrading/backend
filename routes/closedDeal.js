@@ -60,52 +60,100 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
 const dealClosingLock = {};
 
 ClosedDealRoute.post('/:id', async (req, res) => {
-    const { close_rate, manual_auto, order_profit, closed_at } = req.body;
+    const { close_rate, manual_auto, order_profit, closed_at, order_id } = req.body;
     const { id } = req.params;
 
-    if (dealClosingLock[id]) {
-        return res.status(409).json({ msg: "Deals are already being closed for this dealer_id. Try again later." });
+    // Check if deal exists with the provided order_id
+    const deal = await DealModel.findOne({ order_id });
+
+    if (!deal) {
+        return res.status(404).json({ msg: "Deal not found with the provided order_id" });
     }
 
-    // Acquire the lock
-    dealClosingLock[id] = true;
+    // Now you can use 'deal' to create a closed deal entry
+    const closedDealData = {
+        dealer_id: deal.dealer_id,
+        order_id: deal.order_id,
+        order_type: deal.order_type,
+        title: deal.title,
+        lotsize: deal.lotsize,
+        created_at: deal.created_at,
+        bidorask: deal.bidorask,
+        takeprofit: deal.takeprofit,
+        stoploss: deal.stoploss,
+        order_profit,
+        close_rate,
+        manual_auto,
+        closed_at
+    };
 
     try {
-        // Fetch all deals for the given dealer_id
-        const deals = await DealModel.find({ dealer_id: id });
+        // Create a closed deal entry
+        const closedDeal = await ClosedDealModel.create(closedDealData);
 
-        // Create entries in the ClosedDealModel for each deal
-        const closedDeals = await ClosedDealModel.create(deals.map(deal => ({
-            dealer_id: deal.dealer_id,
-            order_id: deal.order_id,
-            order_type: deal.order_type,
-            title: deal.title,
-            lotsize: deal.lotsize,
-            created_at: deal.created_at,
-            bidorask: deal.bidorask,
-            takeprofit: deal.takeprofit,
-            stoploss: deal.stoploss,
-            order_profit: deal.order_profit,  // Make sure 'order_profit' is available in the 'DealModel'
-            close_rate: deal.close_rate,  // Make sure 'close_rate' is available in the 'DealModel'
-            manual_auto,
-            closed_at
-        })));
+        // Delete the deal with the provided order_id from DealModel
+        await DealModel.deleteOne({ order_id });
 
-        // Delete all deals for the given dealer_id from the DealModel
-        await DealModel.deleteMany({ dealer_id: id });
-
-        const firstClosedDeal = closedDeals.length > 0 ? closedDeals[0] : {};
-        const { order_profit: addedOrderProfit } = firstClosedDeal;
-
-        return res.status(200).json({ msg: "Closed deals added successfully", order_profit: addedOrderProfit });
+        return res.status(200).json({ msg: "Closed deal added successfully", closedDeal });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ msg: "Error in processing closed deals" });
-    } finally {
-        // Release the lock
-        dealClosingLock[id] = false;
+        return res.status(500).json({ msg: "Error in processing closed deal" });
     }
 });
+
+// ClosedDealRoute.post('/:id', async (req, res) => {
+//     const { id } = req.params;
+
+//     if (dealClosingLock[id]) {
+//         return res.status(409).json({ msg: "Deals are already being closed for this dealer_id. Try again later." });
+//     }
+
+//     // Acquire the lock
+//     dealClosingLock[id] = true;
+
+//     try {
+//         const { deals } = req.body;
+
+//         // Validate the presence of 'deals' array in the request body
+//         if (!Array.isArray(deals)) {
+//             return res.status(400).json({ msg: "Invalid request format. 'deals' array is missing." });
+//         }
+
+//         // Process each deal in the 'deals' array
+//         const closedDeals = await Promise.all(deals.map(async (deal) => {
+//             // Your existing logic for creating entries in the 'ClosedDealModel'
+//             const closedDeal = await ClosedDealModel.create({
+//                 dealer_id: deal.dealer_id,
+//                 order_id: deal.order_id,
+//                 order_type: deal.order_type,
+//                 title: deal.title,
+//                 lotsize: deal.lotsize,
+//                 created_at: deal.created_at,
+//                 bidorask: deal.bidorask,
+//                 takeprofit: deal.takeprofit,
+//                 stoploss: deal.stoploss,
+//                 order_profit: deal.order_profit,  // Make sure 'order_profit' is available in the 'DealModel'
+//                 close_rate: deal.close_rate,  // Make sure 'close_rate' is available in the 'DealModel'
+//                 manual_auto: deal.manual_auto,
+//                 closed_at: deal.closed_at, // Include fields from the incoming 'deal' object
+//             });
+//             return closedDeal;
+//         }));
+
+//         // Your existing logic for deleting deals from the 'DealModel'
+//         await DealModel.deleteMany({ dealer_id: id });
+
+//         const addedOrderProfits = closedDeals.map((deal) => deal.order_profit);
+
+//         return res.status(200).json({ msg: "Closed deals added successfully", order_profits: addedOrderProfits });
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ msg: "Error in processing closed deals" });
+//     } finally {
+//         // Release the lock
+//         dealClosingLock[id] = false;
+//     }
+// });
 
 
 
