@@ -64,42 +64,56 @@ ClosedDealRoute.post('/:id', async (req, res) => {
     const { id } = req.params;
 
     // Check if deal exists with the provided order_id
-    const deal = await DealModel.findOne({ order_id });
+    const deal = await DealModel.findOne({ order_id,dealer_id:id});
 
     if (!deal) {
         return res.status(404).json({ msg: "Deal not found with the provided order_id" });
     }
 
-    // Now you can use 'deal' to create a closed deal entry
-    const closedDealData = {
-        dealer_id: deal.dealer_id,
-        order_id: deal.order_id,
-        order_type: deal.order_type,
-        title: deal.title,
-        lotsize: deal.lotsize,
-        created_at: deal.created_at,
-        bidorask: deal.bidorask,
-        takeprofit: deal.takeprofit,
-        stoploss: deal.stoploss,
-        order_profit,
-        close_rate,
-        manual_auto,
-        closed_at
-    };
+    // Check if the deal is already being closed
+    if (dealClosingLock[order_id]) {
+        return res.status(400).json({ msg: "Deal is already being closed" });
+    }
+
+    // Set the lock to prevent multiple closings of the same deal
+    dealClosingLock[order_id] = true;
 
     try {
+        // Now you can use 'deal' to create a closed deal entry
+        const closedDealData = {
+            dealer_id: deal.dealer_id,
+            order_id: deal.order_id,
+            order_type: deal.order_type,
+            title: deal.title,
+            lotsize: deal.lotsize,
+            created_at: deal.created_at,
+            bidorask: deal.bidorask,
+            takeprofit: deal.takeprofit,
+            stoploss: deal.stoploss,
+            order_profit,
+            close_rate,
+            manual_auto,
+            closed_at
+        };
+
         // Create a closed deal entry
         const closedDeal = await ClosedDealModel.create(closedDealData);
 
         // Delete the deal with the provided order_id from DealModel
         await DealModel.deleteOne({ order_id });
 
+        // Release the lock after successfully closing the deal
+        dealClosingLock[order_id] = false;
+
         return res.status(200).json({ msg: "Closed deal added successfully", closedDeal });
     } catch (error) {
         console.error(error);
+        // Release the lock in case of an error
+        dealClosingLock[order_id] = false;
         return res.status(500).json({ msg: "Error in processing closed deal" });
     }
 });
+
 
 // ClosedDealRoute.post('/:id', async (req, res) => {
 //     const { id } = req.params;
