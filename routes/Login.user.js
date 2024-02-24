@@ -50,10 +50,10 @@ LoginVRoutes.post('/', async (req, res) => {
             });
         }
 
-        let token = await token.findOne({ userId });
+        let Token = await token.findOne({ userId });
 
         if (!token) {
-            token = await new token({
+            Token = await new token({
                 userId,
                 token: crypto.randomBytes(32).toString("hex"),
             }).save();
@@ -62,7 +62,7 @@ LoginVRoutes.post('/', async (req, res) => {
         }
 
         const userType = user ? user : admin;
-        let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY, {expiresIn: 36000});
+        let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY, {expiresIn: 3600});
 
         return res.status(200).json({
             msg: 'Login successfully',
