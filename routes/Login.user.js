@@ -52,6 +52,8 @@ LoginVRoutes.post('/', async (req, res) => {
 
         let token = await token.findOne({ userId });
 
+
+        
         if (!token) {
             token = await new token({
                 userId,
