@@ -12,7 +12,7 @@ const cookie=require("cookie-parser")
 
 const cors = require('cors');
 app.use(cors({
-  origin: 'http://trader.gloabfx.com/',
+  origin: '*',
   methods: ["POST", "GET", "PUT", "DELETE"],
   credentials: true
 }));
