@@ -7,14 +7,16 @@ require("dotenv").config();
 const fileUpload=require("express-fileupload");
 const app = express();
 app.use(express.json());
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const cookie=require("cookie-parser")
 
 
 const cors = require('cors');
 app.use(cors({
-    origin: '*'
-}))
+  origin: 'http://trader.gloabfx.com/',
+  methods: ["POST", "GET", "PUT", "DELETE"],
+  credentials: true
+}));
+
 // app.use("/public/images",express.static("/public/images"))
 // app.use((req, res) => {
 //     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -30,44 +32,9 @@ app.get("/", (req, res) => {
 //     useTempFiles:true
 // }))
 
+app.use(cookie());
 
 
-//register post/get for vendor
-passport.use(new LocalStrategy(
-    { usernameField: 'email' }, // Assuming you use email as the username
-    async (email, password, done) => {
-      try {
-        // Implement your logic to find and validate the user
-        const user = await userModel.findOne({ email });
-  
-        if (!user) {
-          return done(null, false, { message: 'Incorrect email' });
-        }
-  
-        const isMatch = await user.comparePassword(password);
-  
-        if (!isMatch) {
-          return done(null, false, { message: 'Incorrect password' });
-        }
-  
-        return done(null, user);
-      } catch (error) {
-        return done(error);
-      }
-    }
-  ));
-  
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
-  
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-      done(err, user);
-    });
-  });
-  
-  app.use(passport.initialize());
 
 const registerRouteU = require("./routes/Register.user");
 app.use("/register", registerRouteU);
@@ -124,6 +91,7 @@ app.use("/verify", DocumentVerifyRoute);
 
 const ForgetPass = require("./routes/forgetPassword");
 const { userModel } = require("./models/UserModel");
+const cookieParser = require("cookie-parser");
 app.use("/forget", ForgetPass);
 
 const port = process.env.PORT;

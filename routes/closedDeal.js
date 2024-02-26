@@ -64,7 +64,7 @@ ClosedDealRoute.post('/:id', async (req, res) => {
     const { id } = req.params;
 
     // Check if deal exists with the provided order_id
-    const deal = await DealModel.findOne({ order_id,dealer_id:id});
+    const deal = await DealModel.findOne({ order_id, dealer_id: id });
 
     if (!deal) {
         return res.status(404).json({ msg: "Deal not found with the provided order_id" });
@@ -172,23 +172,88 @@ ClosedDealRoute.post('/:id', async (req, res) => {
 
 
 
+// ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
+//     try {
+//         const accountId = req.params.id;
+//         // const orderId = req.params.order_id;
+//         const profitToAdd = req.body.profit; // Assuming profit is sent in the request body
+
+//         // Find the user record based on the account number
+//         const user = await userModel.findOne({ AcNumber: accountId });
+
+//         if (user) {
+//             // Update the totalbalance in userModel
+//             if (user.neteq === 0 || user.totalbalance === 0||user.bonus>=user.totalbalance) {
+//                 user.bonus += parseFloat(profitToAdd)
+//             } else {
+//                 user.totalbalance += parseFloat(profitToAdd);
+//                 user.neteq += parseFloat(profitToAdd);
+//             }
+
+//             // Save the updated user record
+//             await user.save();
+
+//             // Create a new deposit entry for the user without modifying the existing DepositModel
+//             const newDeposit = new DepositModel({
+//                 AccountNo: accountId,
+//                 balance: user.totalbalance, // Use the updated totalbalance
+//                 type_at: "deal", // You may want to set the order_id here
+//                 // ... other fields if needed
+//             });
+
+//             // Save the new deposit entry
+//             const deposituser = await newDeposit.save();
+
+//             return res.status(200).send({
+//                 AccountNo: accountId,
+//                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
+//                 neteq: user.neteq
+//             });
+//         } else {
+//             return res.status(404).send({ msg: "No user found for the provided account number" });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send({ msg: "Error in network" });
+//     }
+// });
+
 
 ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
     try {
         const accountId = req.params.id;
-        // const orderId = req.params.order_id;
-        const profitToAdd = req.body.profit; // Assuming profit is sent in the request body
+        const profitToAdd = parseFloat(req.body.profit); // Assuming profit is sent in the request body
 
         // Find the user record based on the account number
         const user = await userModel.findOne({ AcNumber: accountId });
 
         if (user) {
-            // Update the totalbalance in userModel
-            if (user.neteq === 0 || user.totalbalance === 0||user.bonus>=user.totalbalance) {
-                user.bonus += parseFloat(profitToAdd)
+            // Check if profitToAdd is negative
+            if (profitToAdd < 0) {
+                // Case 1: If netEq and totalbalance are zero, add to both
+                if (user.neteq === 0 && user.totalbalance === 0) {
+                    user.totalbalance += profitToAdd;
+                    user.neteq += profitToAdd;
+                } else if (user.neteq !== 0 && user.totalbalance !== 0) {
+                    // Case 2: If netEq and totalbalance are not zero, add to both
+                    user.totalbalance += profitToAdd;
+                    user.neteq += profitToAdd;
+                } else if (user.neteq === 0 && user.totalbalance !== 0) {
+                    // Case 3: If netEq becomes zero and totalbalance is not zero, add to totalbalance
+                    user.totalbalance += profitToAdd;
+                } else if (user.neteq === 0 && user.totalbalance === 0) {
+                    // Case 4: If netEq becomes zero and totalbalance becomes zero, set bonus to 0 and add to totalbalance and netEq
+                    user.bonus = 0;
+                    user.totalbalance += profitToAdd;
+                    user.neteq += profitToAdd;
+                } 
+                if (user.neteq < 0 && user.totalbalance < 0) {
+                    user.bonus = 0;
+                }
             } else {
-                user.totalbalance += parseFloat(profitToAdd);
-                user.neteq += parseFloat(profitToAdd);
+                // If profitToAdd is positive, add to both totalbalance and neteq
+                user.totalbalance += profitToAdd;
+                user.neteq += profitToAdd;
             }
 
             // Save the updated user record
@@ -208,7 +273,8 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
             return res.status(200).send({
                 AccountNo: accountId,
                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
-                neteq: user.neteq
+                neteq: user.neteq,
+                bonus: user.bonus,
             });
         } else {
             return res.status(404).send({ msg: "No user found for the provided account number" });
@@ -218,6 +284,10 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" });
     }
 });
+
+
+
+
 
 ClosedDealRoute.use(authentication);
 

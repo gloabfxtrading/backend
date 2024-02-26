@@ -3,6 +3,7 @@ const LoginVRoutes = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const cookie=require("cookie-parser")
 
 
 const { userModel } = require('../models/UserModel');
@@ -11,6 +12,21 @@ const AdminModel = require('../models/Admin.Model');
 const sendEmail = require('../utils/sendEmail');
 const token = require('../models/token');
 
+const verifyUser=(req,res)=>{
+    const token=req.cookies.token;
+    if(!token){
+        return res.json({msg:"we need token provide it."})
+    }else{
+        jwt.verify(token,process.env.SECRET_KEY,(err,decoded)=>{
+            if(err){
+                return res.json({msg:"Authentication error"})
+            }else{
+                req._id=decoded._id
+                return res.json({Status:"Success",_id:req._id})
+            }
+        })
+    }
+}
 
 LoginVRoutes.post('/', async (req, res) => {
     try {
@@ -62,8 +78,8 @@ LoginVRoutes.post('/', async (req, res) => {
         }
 
         const userType = user ? user : admin;
-        let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY, {expiresIn: 3600});
-
+        let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY, { expiresIn: 3600 });
+        res.cookie("token", toke)
         return res.status(200).json({
             msg: 'Login successfully',
             type: userType,
@@ -79,28 +95,11 @@ LoginVRoutes.post('/', async (req, res) => {
 });
 
 
-LoginVRoutes.post('/logout', async (req, res) => {
+LoginVRoutes.get('/logout', async (req, res) => {
     try {
-
-        
-        console.log('req.user:', req.user); // Add this line for debugg
-        // Assuming you have a way to identify the user (e.g., using user ID or token)
-        const userId = req.user ? req.user._id : null; // Check if req.user is defined
-
-        if (!userId) {
-            return res.status(400).json({
-                success: false,
-                message: "User not authenticated",
-            });
-        }
-
-        // Clear the token from the Token collection in the database
-        await token.findOneAndDelete({ userId });
-
         res.clearCookie('token');
         res.status(200).json({
-            success: true,
-            message: "Logged out"
+            msg: "Logged out"
         });
     } catch (error) {
         console.error(error);

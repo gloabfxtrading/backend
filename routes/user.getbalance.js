@@ -45,48 +45,48 @@ UserGetRoute.get("/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" });
     }
 })
-UserGetRoute.put("/addsub/:id", async (req, res) => {
-    try {
-        const accountId = req.params.id;
-        const profitToSubtract = req.body.profit; // Assuming profit is sent in the request body
+// UserGetRoute.put("/addsub/:id", async (req, res) => {
+//     try {
+//         const accountId = req.params.id;
+//         const profitToSubtract = req.body.profit; // Assuming profit is sent in the request body
 
-        // Find the user record based on the account number
-        const user = await userModel.findOne({ AcNumber: accountId });
+//         // Find the user record based on the account number
+//         const user = await userModel.findOne({ AcNumber: accountId });
 
-        if (user) {
-            console.log(user.totalbalance)
-            // Subtract the profit from the totalbalance in userModel
-            user.totalbalance -= parseFloat(profitToSubtract);
-            user.neteq-=parseFloat(profitToSubtract)
+//         if (user) {
+//             console.log(user.totalbalance)
+//             // Subtract the profit from the totalbalance in userModel
+//             user.totalbalance -= parseFloat(profitToSubtract);
+//             user.neteq-=parseFloat(profitToSubtract)
             
-            // Save the updated user recor
-            console.log('Updated Total Balance:', user.totalbalance);
-            await user.save();
+//             // Save the updated user recor
+//             console.log('Updated Total Balance:', user.totalbalance);
+//             await user.save();
 
 
-            // Create a new deposit entry
-            const deposit = new DepositModel({
-                AccountNo: accountId,
-                balance: -profitToSubtract, // Negative because it's a subtraction
-                type_at:"deal",
-                timestamp: new Date(), // You may adjust this based on your timestamp logic
-            });
+//             // Create a new deposit entry
+//             const deposit = new DepositModel({
+//                 AccountNo: accountId,
+//                 balance: -profitToSubtract, // Negative because it's a subtraction
+//                 type_at:"deal",
+//                 timestamp: new Date(), // You may adjust this based on your timestamp logic
+//             });
 
-            // Save the new deposit entry
-            const newDeposit = await deposit.save();
+//             // Save the new deposit entry
+//             const newDeposit = await deposit.save();
 
-            return res.status(200).send({
-                AccountNo: newDeposit.AccountNo,
-                totalBalance: user.totalbalance, // Updated totalbalance from userModel
-            });
-        } else {
-            return res.status(404).send({ msg: "No user found for the provided account number" });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({ msg: "Error in network" });
-    }
-});
+//             return res.status(200).send({
+//                 AccountNo: newDeposit.AccountNo,
+//                 totalBalance: user.totalbalance, // Updated totalbalance from userModel
+//             });
+//         } else {
+//             return res.status(404).send({ msg: "No user found for the provided account number" });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send({ msg: "Error in network" });
+//     }
+// });
 
 
 // UserGetRoute.put("/:id/:order_id", async (req, res) => {
