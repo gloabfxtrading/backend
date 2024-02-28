@@ -243,16 +243,17 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
                 } else if (user.neteq === 0 && user.totalbalance !== 0) {
                     // Case 3: If netEq becomes zero and totalbalance is not zero, add to totalbalance
                     user.totalbalance += profitToAdd;
-                } else if (user.neteq === 0 && user.totalbalance === 0) {
+                } else if (user.neteq <= 0 && user.totalbalance <= 0) {
                     // Case 4: If netEq becomes zero and totalbalance becomes zero, set bonus to 0 and add to totalbalance and netEq
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                }else if (user.neteq < 0 && user.totalbalance < 0) {
-                    user.bonus = 0;
-                    user.totalbalance += profitToAdd;
-                    user.neteq += profitToAdd;
                 }
+                // else if (user.neteq < 0 && user.totalbalance < 0) {
+                //     user.bonus = 0;
+                //     user.totalbalance += profitToAdd;
+                //     user.neteq += profitToAdd;
+                // }
             } else {
                 // If profitToAdd is positive, add to both totalbalance and neteq
                 user.totalbalance += profitToAdd;
