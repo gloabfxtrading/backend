@@ -59,7 +59,7 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
 
 const dealClosingLock = {};
 
-ClosedDealRoute.post('/:id' , async (req, res) => {
+ClosedDealRoute.post('/:id', async (req, res) => {
     const { close_rate, manual_auto, order_profit, closed_at, order_id } = req.body;
     const { id } = req.params;
 
@@ -105,7 +105,7 @@ ClosedDealRoute.post('/:id' , async (req, res) => {
         // Release the lock after successfully closing the deal
         dealClosingLock[order_id] = false;
 
-        return res.status(200).json({ msg: "Closed deal added successfully", closedDeal,order_profit });
+        return res.status(200).json({ msg: "Closed deal added successfully", closedDeal, order_profit });
     } catch (error) {
         console.error(error);
         // Release the lock in case of an error
@@ -113,7 +113,7 @@ ClosedDealRoute.post('/:id' , async (req, res) => {
         return res.status(500).json({ msg: "Error in processing closed deal" });
     }
 
-    
+
 });
 
 
@@ -231,23 +231,27 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
 
         if (user) {
             // Check if profitToAdd is negative
-            if (profitToAdd < 0) {
+            if (profitToAdd < 0 && profitToAdd !== true) {
                 // Case 1: If netEq and totalbalance are zero, add to both
                 if (user.neteq === 0 && user.totalbalance === 0) {
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                } else if (user.neteq !== 0 && user.totalbalance !== 0) {
+                    profitToAdd = true;
+                } else if (user.neteq !== 0 && user.totalbalance !== 0 && profitToAdd !== true) {
                     // Case 2: If netEq and totalbalance are not zero, add to both
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                } else if (user.neteq === 0 && user.totalbalance !== 0) {
+                    profitToAdd = true;
+                } else if (user.neteq === 0 && user.totalbalance !== 0 && profitToAdd !== true) {
                     // Case 3: If netEq becomes zero and totalbalance is not zero, add to totalbalance
                     user.totalbalance += profitToAdd;
-                } else if (user.neteq <= 0 && user.totalbalance <= 0) {
+                    profitToAd = true
+                } else if (user.neteq <= 0 && user.totalbalance <= 0 && profitToAdd !== true) {
                     // Case 4: If netEq becomes zero and totalbalance becomes zero, set bonus to 0 and add to totalbalance and netEq
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
+                    profitToAdd = true;
                 }
                 // else if (user.neteq < 0 && user.totalbalance < 0) {
                 //     user.bonus = 0;
@@ -256,8 +260,11 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
                 // }
             } else {
                 // If profitToAdd is positive, add to both totalbalance and neteq
-                user.totalbalance += profitToAdd;
-                user.neteq += profitToAdd;
+                if (profitToAdd !== true) {
+                    user.totalbalance += profitToAdd;
+                    user.neteq += profitToAdd;
+                    profitToAdd = true;
+                }
             }
 
             // Save the updated user record
@@ -293,12 +300,12 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
 ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
     try {
         const accountId = req.params.id;
-        const orderId=req.params.orderid;
+        const orderId = req.params.orderid;
         const profitToAdd = parseFloat(req.body.profit); // Assuming profit is sent in the request body
 
         // Find the user record based on the account number
         const deal = await ClosedDealModel.findOne({ order_id: orderId });
-        const user=await userModel.findOne({ AcNumber: accountId})
+        const user = await userModel.findOne({ AcNumber: accountId })
         if (user) {
             // Check if profitToAdd is negative
             if (profitToAdd < 0) {
@@ -318,7 +325,7 @@ ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                } 
+                }
                 if (user.neteq < 0 && user.totalbalance < 0) {
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
@@ -337,7 +344,7 @@ ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
             const newDeposit = new DepositModel({
                 AccountNo: accountId,
                 balance: user.totalbalance, // Use the updated totalbalance
-                type_at: "deal", 
+                type_at: "deal",
                 order_id: orderId,
                 // You may want to set the order_id here
                 // ... other fields if needed
