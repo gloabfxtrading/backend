@@ -12,7 +12,7 @@ const authentication = (req, res, next) => {
     }
     jwt.verify(token, process.env.SECRET_KEY, async (err, decorded) => {
         if (err) {
-            return res.send("please login");
+            return res.send({msg:"please login"});
         }
         const user_id = decorded.user_id
         const user = await userModel.findOne({ _id: user_id })
