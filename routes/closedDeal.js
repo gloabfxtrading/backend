@@ -105,7 +105,7 @@ ClosedDealRoute.post('/:id' , async (req, res) => {
         // Release the lock after successfully closing the deal
         dealClosingLock[order_id] = false;
 
-        return res.status(200).json({ msg: "Closed deal added successfully", closedDeal });
+        return res.status(200).json({ msg: "Closed deal added successfully", closedDeal,order_profit });
     } catch (error) {
         console.error(error);
         // Release the lock in case of an error
