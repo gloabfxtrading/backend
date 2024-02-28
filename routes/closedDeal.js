@@ -248,8 +248,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                } 
-                if (user.neteq < 0 && user.totalbalance < 0) {
+                }else if (user.neteq < 0 && user.totalbalance < 0) {
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
