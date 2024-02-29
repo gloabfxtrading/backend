@@ -5,6 +5,7 @@ const ClosedDealModel = require("../models/ClosedDeal");
 const DepositModel = require("../models/adminDeposit.Model");
 const { userModel } = require("../models/UserModel");
 const authentication = require("../middlewares/authenication")
+const axios=require("axios");
 
 
 const dealClosingLocks = {};
@@ -220,6 +221,10 @@ ClosedDealRoute.post('/:id' , async (req, res) => {
 //     }
 // });
 
+
+// // const dealClosingLock = {};
+
+// C
 
 ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
     try {

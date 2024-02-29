@@ -78,7 +78,7 @@ LoginVRoutes.post('/', async (req, res) => {
         }
 
         const userType = user ? user : admin;
-        let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY, { expiresIn: 3600 });
+        let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY);
         res.cookie("token", toke)
         return res.status(200).json({
             msg: 'Login successfully',
