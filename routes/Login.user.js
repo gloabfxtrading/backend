@@ -46,6 +46,7 @@ LoginVRoutes.post('/', async (req, res) => {
         const hashed_password = model.password;
         const result = await bcrypt.compare(password, hashed_password);
 
+        
         if (!result) {
             return res.status(400).json({
                 msg: 'Wrong password, please try again later',
