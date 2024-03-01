@@ -5,41 +5,41 @@ const DepositModel = require("../models/adminDeposit.Model");
 const AdminDeposit = express.Router();
 const authentication=require("../middlewares/authenication")
 
-async function sendVerificationEmail(first, last, balance, created_at, email) {
-    // Create a Nodemailer transporter
-    let transporter = nodemailer.createTransport({
-        host: process.env.HOST,
-        service: process.env.SERVICE,
-        post: Number(process.env.EMAIL_PORT),
-        secure: Boolean(process.env.EMAIL_PORT),
-        auth: {
-            user: process.env.USER,
-            pass: process.env.PASS,
-        }
-    });
+// async function sendVerificationEmail(first, last, balance, created_at, email) {
+//     // Create a Nodemailer transporter
+//     let transporter = nodemailer.createTransport({
+//         host: process.env.HOST,
+//         service: process.env.SERVICE,
+//         post: Number(process.env.EMAIL_PORT),
+//         secure: Boolean(process.env.EMAIL_PORT),
+//         auth: {
+//             user: process.env.USER,
+//             pass: process.env.PASS,
+//         }
+//     });
 
-    // Email content
-    let mailOptions = {
-        from: process.env.USER,
-        to: email,
-        subject: 'forexbankalerts@gloabfx.com',
-        text: `Dear ${first} ${last},
+//     // Email content
+//     let mailOptions = {
+//         from: process.env.USER,
+//         to: email,
+//         subject: 'forexbankalerts@gloabfx.com',
+//         text: `Dear ${first} ${last},
         
-        we wish to infrom you that your account is credited by $ ${balance} on ${created_at.toLocaleString('en-IN', {
-            timeZone: 'Asia/Kolkata',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
-        })} , Regards gloabfx.com`,
-    };
+//         we wish to infrom you that your account is credited by $ ${balance} on ${created_at.toLocaleString('en-IN', {
+//             timeZone: 'Asia/Kolkata',
+//             year: 'numeric',
+//             month: 'long',
+//             day: 'numeric',
+//             hour: 'numeric',
+//             minute: 'numeric',
+//             second: 'numeric',
+//         })} , Regards gloabfx.com`,
+//     };
 
-    // Send the email
-    let info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: ', info.messageId);
-}
+//     // Send the email
+//     let info = await transporter.sendMail(mailOptions);
+//     console.log('Email sent: ', info.messageId);
+// }
 
 
 AdminDeposit.post('/', async (req, res) => {
@@ -76,7 +76,7 @@ AdminDeposit.post('/', async (req, res) => {
             existingUser.neteq = newneteq
             existingUser.bonus=bonuscustomer
             await existingUser.save();
-            sendVerificationEmail(existingUser.first_name, existingUser.last_name, balance, deposituser.created_at, existingUser.email);
+            // sendVerificationEmail(existingUser.first_name, existingUser.last_name, balance, deposituser.created_at, existingUser.email);
             return res.status(200).send({ msg: "Amount added successfully", deposituser });
        
     } catch (error) {
