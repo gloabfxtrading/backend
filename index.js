@@ -76,6 +76,9 @@ app.use("/requestmoney", WithdrawRequestRoute);
 const Checkmail = require("./routes/checkEmail");
 app.use("/check", Checkmail);
 
+const registerRouteDemo = require("./routes/demoRegister");
+app.use("/registerdemo", registerRouteDemo);
+
 const UserDepositRoute = require("./routes/User.deposit");
 app.use("/file", UserDepositRoute);
 

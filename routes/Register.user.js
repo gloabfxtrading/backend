@@ -9,6 +9,7 @@ const { userModel } = require('../models/UserModel');
 const DepositModel = require('../models/adminDeposit.Model');
 
 
+
 const generateAccountNumber = async () => {
     const startNumber = 1000100001; // Starting number for the account number
     const lastUser = await userModel.findOne({}, {}, { sort: { 'createdAt': -1 } });
