@@ -89,7 +89,7 @@ AdminDeposit.post('/', async (req, res) => {
 
 AdminDeposit.post('/demo', async (req, res) => {
     try {
-        const { AccountNo, balance, type_at,bonus } = req.body;
+        const { AccountNo, balance, type_at } = req.body;
 
         // Check if a user with the given AccountNo exists
         const existingUser = await DemouserModel.findOne({ AcNumber: AccountNo });
@@ -102,7 +102,7 @@ AdminDeposit.post('/demo', async (req, res) => {
         const deposit = new DepositModel({
             AccountNo,
             balance,
-            bonus,
+           
             type_at: "deposit"
 
         });
@@ -113,12 +113,12 @@ AdminDeposit.post('/demo', async (req, res) => {
         // Update the totalbalance in userModel
         const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance)+parseFloat(bonus);
         const newneteq = parseFloat(existingUser.neteq) + parseFloat(balance)
-        const bonuscustomer=parseFloat(existingUser.bonus)+parseFloat(bonus);
+        
         // console.log(newTotalBalance)
         
             existingUser.totalbalance = newTotalBalance;
             existingUser.neteq = newneteq
-            existingUser.bonus=bonuscustomer
+            
             await existingUser.save();
             // sendVerificationEmail(existingUser.first_name, existingUser.last_name, balance, deposituser.created_at, existingUser.email);
             return res.status(200).send({ msg: "Amount added successfully", deposituser });
