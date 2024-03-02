@@ -111,7 +111,7 @@ AdminDeposit.post('/demo', async (req, res) => {
         console.log(balance)
 
         // Update the totalbalance in userModel
-        const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance)+parseFloat(bonus);
+        const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance);
         const newneteq = parseFloat(existingUser.neteq) + parseFloat(balance)
         
         // console.log(newTotalBalance)
