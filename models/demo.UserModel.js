@@ -7,11 +7,13 @@ const DemouserSchema = new mongoose.Schema({
  
   
   totalbalance: { type: Number, default: 0.00 },
+  AcNumber: { type: String,  required: [true, "last_name is required"] },
   
   created_at: {
     type: Date,
     default: Date.now, // Set default value to the current timestamp
   },
+  type: { type: String, default: "user" },
   neteq: { type: Number, default: 0.00 },
   bonus:{type:Number,default:0.00},
   otp: String,
@@ -21,6 +23,6 @@ const DemouserSchema = new mongoose.Schema({
 
 
 
-const DemouserModel = mongoose.model('user', DemouserSchema);
+const DemouserModel = mongoose.model('demouser', DemouserSchema);
 
 module.exports = { DemouserModel }

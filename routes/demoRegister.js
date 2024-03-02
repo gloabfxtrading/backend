@@ -20,12 +20,12 @@ const { userModel } = require("../models/UserModel");
 
 
 
-registerRouteDemo.post('/:id', async (req, res) => {
+registerRouteDemo.get('/:id', async (req, res) => {
     try {
-        const { totalbalance, net } = req.body;
+        const { totalbalance, net ,AcNumber} = req.body;
 
         // Find the user by AcNumber
-        const user = await userModel.findOne({ AcNumber: req.params.id });
+        let user = await userModel.findOne({ AcNumber: req.params.id });
 
         // Check if the user exists
         if (!user) {
@@ -40,6 +40,7 @@ registerRouteDemo.post('/:id', async (req, res) => {
         if (existingDemoUser) {
             return res.status(400).json({
                 msg: 'Demo user already exists',
+                type:existingDemoUser
             });
         }
 
@@ -65,7 +66,7 @@ registerRouteDemo.post('/:id', async (req, res) => {
 
         res.json({
             msg: 'An email sent, please verify successfully',
-            userdemo: savedDemoUser,
+            type: savedDemoUser,
         });
         // });
     } catch (error) {
@@ -79,14 +80,17 @@ registerRouteDemo.post('/:id', async (req, res) => {
 // const { authentication } = require("../middlewares/authenication")
 // registerRouteU.use(authentication);
 
-registerRouteDemo.get('/:userID', async (req, res) => {
+registerRouteDemo.get('/user/:userID', async (req, res) => {
     try {
         if(req.params.userID==="admin"){
-            const user = await userModel.find({ });
+            const user = await DemouserModel.find({ });
         return res.status(200).send(user);
         }
-        const user = await userModel.findOne({ AcNumber: req.params.userID });
-        return res.status(200).send(user);
+        const user = await DemouserModel.findOne({ AcNumber: req.params.userID });
+        return res.status(200).send({
+            msg: 'An email sent, please verify successfully',
+            type: user,
+        });
     }
     catch (error) {
         console.log(error);
@@ -98,59 +102,59 @@ registerRouteDemo.get('/:userID', async (req, res) => {
 
 
 
-registerRouteDemo.put('/:userID', async (req, res) => {
-    try {
-        const newData = req.body;
-         console.log(newData);
-        // Update the user data in the database
-        const updatedUser = await userModel.findOneAndUpdate(
-            { AcNumber: req.params.userID },
-            newData, // Directly pass newData to $set
-            { new: true }
-        );
+// registerRouteDemo.put('/:userID', async (req, res) => {
+//     try {
+//         const newData = req.body;
+//          console.log(newData);
+//         // Update the user data in the database
+//         const updatedUser = await userModel.findOneAndUpdate(
+//             { AcNumber: req.params.userID },
+//             newData, // Directly pass newData to $set
+//             { new: true }
+//         );
           
-        if (updatedUser) {
-            return res.status(200).send({
-                msg: "User data updated successfully",
-                user: updatedUser
-            });
-        } else {
-            return res.status(404).send({
-                msg: "User not found"
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            msg: "Error in updating user data"
-        });
-    }
-});
+//         if (updatedUser) {
+//             return res.status(200).send({
+//                 msg: "User data updated successfully",
+//                 user: updatedUser
+//             });
+//         } else {
+//             return res.status(404).send({
+//                 msg: "User not found"
+//             });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send({
+//             msg: "Error in updating user data"
+//         });
+//     }
+// });
 
 
 
-registerRouteDemo.delete('/:userID', async (req, res) => {
-    try {
-        // Delete the user data from the database
-        const deletedUser = await userModel.findOneAndDelete({ AcNumber: req.params.userID });
+// registerRouteDemo.delete('/:userID', async (req, res) => {
+//     try {
+//         // Delete the user data from the database
+//         const deletedUser = await userModel.findOneAndDelete({ AcNumber: req.params.userID });
 
-        if (deletedUser) {
-            return res.status(200).send({
-                msg: "User deleted successfully",
-                user: deletedUser
-            });
-        } else {
-            return res.status(404).send({
-                msg: "User not found"
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            msg: "Error in deleting user"
-        });
-    }
-});
+//         if (deletedUser) {
+//             return res.status(200).send({
+//                 msg: "User deleted successfully",
+//                 user: deletedUser
+//             });
+//         } else {
+//             return res.status(404).send({
+//                 msg: "User not found"
+//             });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send({
+//             msg: "Error in deleting user"
+//         });
+//     }
+// });
 
 
 

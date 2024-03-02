@@ -90,6 +90,12 @@ app.use("/changepassword", changePasswordRoutes);
 const DocumentVerifyRoute = require("./routes/DocumentVerify");
 app.use("/verify", DocumentVerifyRoute);
 
+const ClosedDealRouteDemo = require("./routes/closeddealdemo");
+app.use("/closedemo", ClosedDealRouteDemo);
+
+const dealRouteDemo = require("./routes/dealdemo");
+app.use("/makeadealdemo", dealRouteDemo);
+
 
 const ForgetPass = require("./routes/forgetPassword");
 const { userModel } = require("./models/UserModel");
