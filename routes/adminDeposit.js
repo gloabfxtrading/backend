@@ -106,7 +106,6 @@ AdminDeposit.post('/demo', async (req, res) => {
             type_at: "deposit"
 
         });
-
         // Save the deposit entry
         const deposituser = await deposit.save();
         console.log(balance)
