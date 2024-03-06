@@ -74,7 +74,7 @@ LoginVRoutes.post('/', async (req, res) => {
                 userId,
                 token: crypto.randomBytes(32).toString("hex"),
             }).save();
-            const url = `${process.env.BASE_URL}/users/${userId}/verify/${token.token}`;
+            const url = `${process.env.BASE_URL}/users/${userId}/verify/${Token.token}`;
             await sendEmail(model.email, "Verify Email", url);
         }
 
