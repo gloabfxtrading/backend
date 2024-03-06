@@ -69,7 +69,7 @@ LoginVRoutes.post('/', async (req, res) => {
 
         let Token = await token.findOne({ userId });
 
-        if (!token) {
+        if (!Token) {
             Token = await new token({
                 userId,
                 token: crypto.randomBytes(32).toString("hex"),
