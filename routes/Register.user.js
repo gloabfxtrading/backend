@@ -1,7 +1,7 @@
 const express = require('express');
 const registerRouteU = express.Router();
 const bcrypt = require('bcrypt');
-const Token = require("../models/token");
+const token = require("../models/token");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto")
 
@@ -100,12 +100,12 @@ registerRouteU.post('/', async (req, res) => {
             // });
 
             // await deposit.save();
-            const token = await new Token({
+            const Token = await new token({
                 userId: user._id,
                 token: crypto.randomBytes(32).toString("hex")
             }).save()
             const url = `Dear user, please click on below link to verify your account
-            ${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`
+            ${process.env.BASE_URL}/users/${user._id}/verify/${Token.token}`
 
             console.log(user.email)
             await sendEmail(user.email, "verify", url)
@@ -206,7 +206,7 @@ registerRouteU.get("/:id/verify/:token", async (req, res) => {
         const user = await userModel.findOne({ _id: req.params.id })
         if (!user) return res.status(400).send({ msg: "invalid link" })
 
-        const token = await Token.findOne({
+        const Token = await token.findOne({
             userId: user._id,
             token: req.params.token
         })
@@ -215,7 +215,7 @@ registerRouteU.get("/:id/verify/:token", async (req, res) => {
         await user.updateOne({ _id: user._id, verified: true });
 
         // Use deleteOne instead of remove
-        await Token.deleteOne({
+        await token.deleteOne({
             userId: user._id,
             token: req.params.token
         });

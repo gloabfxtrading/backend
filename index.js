@@ -13,16 +13,9 @@ const cookie=require("cookie-parser")
 const cors = require('cors');
 app.use(cors({
   origin: '*',
-  
 }));
 
-// app.use("/public/images",express.static("/public/images"))
-// app.use((req, res) => {
-//     res.setHeader("Access-Control-Allow-Origin", "*");
 
-//   });
-// app.use(express.json({limit:"50mb"}))
-// app.use(express.urlencoded({extended:true,limit:"50mb"}))
 
 app.get("/", (req, res) => {
     res.send({ msg: "base hi api endpoint" })
