@@ -76,7 +76,7 @@ LoginVRoutes.post('/', async (req, res) => {
             }).save();
             const url = `${process.env.BASE_URL}/users/${userId}/verify/${Token.token}`;
             await sendEmail(model.email, "Verify Email", url);
-        }
+        }else{
 
         const userType = user ? user : admin;
         let toke = jwt.sign({ _id: userId, userType }, process.env.SECRET_KEY);
@@ -86,6 +86,7 @@ LoginVRoutes.post('/', async (req, res) => {
             type: userType,
             token: toke,
         });
+    }
 
     } catch (error) {
         console.error(error);
