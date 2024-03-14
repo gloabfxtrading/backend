@@ -68,7 +68,7 @@ DocumentVerifyRoute.get("/:id", async (req, res) => {
        
         return res.status(200).send(deposit)
       }
-      let deposit = await DocumentModel.findOne({ AcNumber: req.params.id })
+      let deposit = await DocumentModel.find({ AcNumber: req.params.id })
       console.log(deposit)
       return res.status(200).send(deposit)
     } catch (error) {
