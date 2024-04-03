@@ -46,7 +46,7 @@ const generateAccountNumber = async () => {
 registerRouteU.post('/', async (req, res) => {
     try {
         const {
-            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage,totalbalance,net,remarks
+            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage,totalbalance,net,remarks,exposer
         } = req.body;
 
         const accountNumber = await generateAccountNumber();
@@ -76,7 +76,7 @@ registerRouteU.post('/', async (req, res) => {
                 totalbalance,
                 net,
                 AcNumber: accountNumber,
-                remarks
+                remarks,
             });
 
             const existingNo = await userModel.findOne({ phone });
@@ -141,6 +141,24 @@ registerRouteU.get('/:userID', async (req, res) => {
         });
     }
 })
+
+registerRouteU.get('/search', async (req, res) => {
+    try {
+        const searchQuery = req.query.q; // Assuming the search query is passed as a query parameter named 'q'
+        if (!searchQuery) {
+            return res.status(400).send({ msg: "Search query is required" });
+        }
+
+        const users = await userModel.findOne({ name: { $regex: searchQuery, $options: 'i' } });
+        return res.status(200).send(users);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            msg: "Error in searching users"
+        });
+    }
+});
+
 
 
 

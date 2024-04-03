@@ -1,6 +1,7 @@
 const { userModel } = require("../models/UserModel");
 const express = require("express");
 const bcrypt = require("bcrypt");
+const AdminModel = require("../models/Admin.Model");
 const changePasswordRoutes = express.Router();
 
 changePasswordRoutes.post('/:id', async (req, res) => {
@@ -77,6 +78,8 @@ changePasswordRoutes.post('/', async (req, res) => {
         });
     }
 });
+
+
 
 module.exports = changePasswordRoutes;
 
