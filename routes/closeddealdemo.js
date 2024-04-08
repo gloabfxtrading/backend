@@ -212,12 +212,12 @@ ClosedDealRouteDemo.put("/addprofit/:id/:orderid", async (req, res) => {
                 if (user.neteq === 0 && user.totalbalance === 0) {
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                    user.exposer+=(profitToAdd*500)
+                    // user.exposer+=(profitToAdd*500)
                 } else if (user.neteq !== 0 && user.totalbalance !== 0) {
                     // Case 2: If netEq and totalbalance are not zero, add to both
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                    user.exposer+=(profitToAdd*500)
+                    // user.exposer+=(profitToAdd*500)
                 } else if (user.neteq === 0 && user.totalbalance !== 0) {
                     // Case 3: If netEq becomes zero and totalbalance is not zero, add to totalbalance
                     user.totalbalance += profitToAdd;
@@ -226,19 +226,19 @@ ClosedDealRouteDemo.put("/addprofit/:id/:orderid", async (req, res) => {
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                    user.exposer+=(profitToAdd*500)
+                    // user.exposer+=(profitToAdd*500)
                 } 
                 if (user.neteq < 0 && user.totalbalance < 0) {
                     user.bonus = 0;
                     user.totalbalance += profitToAdd;
                     user.neteq += profitToAdd;
-                    user.exposer+=(profitToAdd*500)
+                    // user.exposer+=(profitToAdd*500)
                 }
             } else {
                 // If profitToAdd is positive, add to both totalbalance and neteq
                 user.totalbalance += profitToAdd;
                 user.neteq += profitToAdd;
-                user.exposer+=(profitToAdd*500)
+                // user.exposer+=(profitToAdd*500)
             }
 
             // Save the updated user record

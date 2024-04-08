@@ -46,7 +46,7 @@ const generateAccountNumber = async () => {
 registerRouteU.post('/', async (req, res) => {
     try {
         const {
-            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage, totalbalance, net, remarks, exposer
+            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage, totalbalance, net, remarks
         } = req.body;
 
         const accountNumber = await generateAccountNumber();
@@ -77,7 +77,7 @@ registerRouteU.post('/', async (req, res) => {
                 net,
                 AcNumber: accountNumber,
                 remarks,
-                exposer: totalbalance * 500,
+                
             });
 
             const existingNo = await userModel.findOne({ phone });
@@ -142,6 +142,8 @@ registerRouteU.get('/:userID', async (req, res) => {
         });
     }
 })
+
+
 registerRouteU.get('/', async (req, res) => {
     try {
         const { q } = req.query; // Get the search query from the 'q' parameter
