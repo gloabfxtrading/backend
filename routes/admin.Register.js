@@ -27,7 +27,6 @@ AdminRouteRegister.post('/change', async (req, res) => {
     console.log("hi")
     try {
         const { email, password } = req.body;
-        
         // Check if both email and password are provided
         if (!email || !password) {
             return res.status(400).json({

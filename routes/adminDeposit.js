@@ -71,11 +71,13 @@ AdminDeposit.post('/', async (req, res) => {
         const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance)+parseFloat(bonus);
         const newneteq = parseFloat(existingUser.neteq) + parseFloat(balance)
         const bonuscustomer=parseFloat(existingUser.bonus)+parseFloat(bonus);
+        const exposer=parseFloat(existingUser.totalbalance)+parseFloat(balance*500)
         // console.log(newTotalBalance)
         
             existingUser.totalbalance = newTotalBalance;
             existingUser.neteq = newneteq
             existingUser.bonus=bonuscustomer
+            existingUser.exposer=exposer
             await existingUser.save();
             // sendVerificationEmail(existingUser.first_name, existingUser.last_name, balance, deposituser.created_at, existingUser.email);
             return res.status(200).send({ msg: "Amount added successfully", deposituser });
@@ -102,7 +104,6 @@ AdminDeposit.post('/demo', async (req, res) => {
         const deposit = new DepositModel({
             AccountNo,
             balance,
-           
             type_at: "deposit"
 
         });
@@ -113,11 +114,12 @@ AdminDeposit.post('/demo', async (req, res) => {
         // Update the totalbalance in userModel
         const newTotalBalance = parseFloat(existingUser.totalbalance) + parseFloat(balance);
         const newneteq = parseFloat(existingUser.neteq) + parseFloat(balance)
-        
+        const exposer=parseFloat(existingUser.totalbalance)+parseFloat(balance*500)
         // console.log(newTotalBalance)
         
             existingUser.totalbalance = newTotalBalance;
             existingUser.neteq = newneteq
+            existingUser.exposer=exposer
             
             await existingUser.save();
             // sendVerificationEmail(existingUser.first_name, existingUser.last_name, balance, deposituser.created_at, existingUser.email);
@@ -131,7 +133,7 @@ AdminDeposit.post('/demo', async (req, res) => {
 
 
 
-AdminDeposit.use(authentication)
+// AdminDeposit.use(authentication)
 AdminDeposit.get("/:id", async (req, res) => {
     try {
         if (req.params.id === "asdf1234") {

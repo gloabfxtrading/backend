@@ -46,7 +46,7 @@ const generateAccountNumber = async () => {
 registerRouteU.post('/', async (req, res) => {
     try {
         const {
-            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage,totalbalance,net,remarks,exposer
+            first_name, last_name, email, password, street_add, zip_code, city, state, country, dob, phone, account_type, leverage, totalbalance, net, remarks, exposer
         } = req.body;
 
         const accountNumber = await generateAccountNumber();
@@ -77,6 +77,7 @@ registerRouteU.post('/', async (req, res) => {
                 net,
                 AcNumber: accountNumber,
                 remarks,
+                exposer: totalbalance * 500,
             });
 
             const existingNo = await userModel.findOne({ phone });
@@ -127,9 +128,9 @@ registerRouteU.post('/', async (req, res) => {
 
 registerRouteU.get('/:userID', async (req, res) => {
     try {
-        if(req.params.userID==="admin"){
-            const user = await userModel.find({ });
-        return res.status(200).send(user);
+        if (req.params.userID === "admin") {
+            const user = await userModel.find({});
+            return res.status(200).send(user);
         }
         const user = await userModel.findOne({ AcNumber: req.params.userID });
         return res.status(200).send(user);
@@ -141,18 +142,28 @@ registerRouteU.get('/:userID', async (req, res) => {
         });
     }
 })
-
-registerRouteU.get('/search', async (req, res) => {
+registerRouteU.get('/', async (req, res) => {
     try {
-        const searchQuery = req.query.q; // Assuming the search query is passed as a query parameter named 'q'
-        if (!searchQuery) {
-            return res.status(400).send({ msg: "Search query is required" });
-        }
+        const { q } = req.query; // Get the search query from the 'q' parameter
 
-        const users = await userModel.findOne({ name: { $regex: searchQuery, $options: 'i' } });
+        // Initialize an empty array to store search conditions for each field
+        const searchConditions = [];
+
+        // Iterate over the fields in your schema that you want to search
+        const fieldsToSearch = ['first_name','last_name', 'email', 'phone','AcNumber']; // Add more fields as needed
+        fieldsToSearch.forEach(field => {
+            // For each field, construct a regex search condition and push it to the array
+            searchConditions.push({ [field]: { $regex: q, $options: 'i' } });
+        });
+
+        // Use $or operator to search across all fields
+        const query = { $or: searchConditions };
+
+        // Use find() to get multiple matching users
+        const users = await userModel.find(query);
         return res.status(200).send(users);
     } catch (error) {
-        console.log(error);
+        
         return res.status(500).send({
             msg: "Error in searching users"
         });
@@ -162,17 +173,20 @@ registerRouteU.get('/search', async (req, res) => {
 
 
 
+
+
+
 registerRouteU.put('/:userID', async (req, res) => {
     try {
         const newData = req.body;
-         console.log(newData);
+        console.log(newData);
         // Update the user data in the database
         const updatedUser = await userModel.findOneAndUpdate(
             { AcNumber: req.params.userID },
             newData, // Directly pass newData to $set
             { new: true }
         );
-          
+
         if (updatedUser) {
             return res.status(200).send({
                 msg: "User data updated successfully",

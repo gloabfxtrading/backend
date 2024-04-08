@@ -89,6 +89,9 @@ app.use("/closedemo", ClosedDealRouteDemo);
 const dealRouteDemo = require("./routes/dealdemo");
 app.use("/makeadealdemo", dealRouteDemo);
 
+const WithdrawRequestOtherRoute=require("./routes/Withdrawother");
+app.use("/otherwithdraw",WithdrawRequestOtherRoute);
+
 
 const ForgetPass = require("./routes/forgetPassword");
 const { userModel } = require("./models/UserModel");
