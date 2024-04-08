@@ -91,22 +91,22 @@ WithdrawRequestRoute.post('/:id/:account_number', async (req, res) => {
     }
 })
 
-WithdrawRequestRoute.post("/:id",async(req,res)=>{
+WithdrawRequestRoute.post("/:id", async (req, res) => {
     try {
-        const {Alloption,AccountId,AccountName,withdraw_money,remarks,status,created_at}=req.body;
+        const { Alloption, AccountId, AccountName, withdraw_money, remarks, status, created_at } = req.body;
 
-        const user = await BankModel.findOne({IDNumber: req.params.id})
+        const user = await BankModel.findOne({ IDNumber: req.params.id })
         const withdrawAccount = await generateAccountNumber();
 
-        const new_withdraw=new WithdrawModel1({
-          IDNumber:user.IDNumber,
-          Alloption,
-          AccountId,
-          withdraw_id:withdrawAccount,
-          withdraw_money,
-          remarks,
-          status,
-          created_at
+        const new_withdraw = new WithdrawModel1({
+            IDNumber: user.IDNumber,
+            Alloption,
+            AccountId,
+            withdraw_id: withdrawAccount,
+            withdraw_money,
+            remarks,
+            status,
+            created_at
         })
         const withdraw = await new_withdraw.save();
         return res.status(200).send({ msg: "Withdraw request sent", withdraw })
@@ -139,7 +139,7 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
                 if (existingDeposit.neteq >= withdraw.withdraw_money) {
                     existingDeposit.totalbalance -= withdraw.withdraw_money;
                     existingDeposit.neteq -= withdraw.withdraw_money;
-                    existingDeposit.exposer-=(withdraw.withdraw_money*500)
+                    existingDeposit.exposer -= (withdraw.withdraw_money * 500)
                     // Save the updated deposit
                     await existingDeposit.save();
                 } else {
@@ -170,13 +170,16 @@ WithdrawRequestRoute.put('/:id/:withdrawid', async (req, res) => {
 
 WithdrawRequestRoute.get('/:id', async (req, res) => {
     try {
+        let withdrawArr=[]
         if (req.params.id === "admin") {
-            const withdraw = await WithdrawModel.find({  });
+            const withdraw = await WithdrawModel.find({});
             return res.status(200).send(withdraw);
         }
         AccountNo = req.params.id;
-        const withdraw = await WithdrawModel.find({ IDNumber: AccountNo });
-        return res.status(200).send(withdraw);
+        const withdraw1 = await WithdrawModel.find({ IDNumber: AccountNo });
+        const withdraw2 = await WithdrawModel1.find({ IDNumber: AccountNo });
+        withdrawArr = withdrawArr.concat(withdraw1, withdraw2);
+        return res.status(200).send(withdrawArr);
     } catch (error) {
         return res.status(404).send({ msg: "Unable to fetch withdraw Details" });
     }
