@@ -110,7 +110,7 @@ registerRouteU.post('/', async (req, res) => {
             ${process.env.BASE_URL}/users/${user._id}/verify/${Token.token}`
 
             console.log(user.email)
-            await sendEmail(user.email, "verify", url)
+            await sendEmail(user.email, "GloabFx email verification", url)
             res.json({
                 msg: 'an email sent plzz verify successfully',
             });
