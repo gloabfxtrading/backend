@@ -16,7 +16,7 @@ const authentication = (req, res, next) => {
         }
         const user_id = decorded.user_id
         const user = await userModel.findOne({ _id: user_id })
-        req.user = user
+        req.user = user 
         next()
     })
 }

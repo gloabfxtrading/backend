@@ -5,6 +5,7 @@ const DepositModel = require("../models/adminDeposit.Model");
 const AdminDeposit = express.Router();
 const authentication=require("../middlewares/authenication");
 const { DemouserModel } = require("../models/demo.UserModel");
+const mongoose=require("mongoose")
 
 // async function sendVerificationEmail(first, last, balance, created_at, email) {
 //     // Create a Nodemailer transporter
@@ -148,6 +149,39 @@ AdminDeposit.get("/:id", async (req, res) => {
         return res.status(500).send({ msg: "Error in network" })
     }
 })
+
+// AdminDeposit.get("/:id", async (req, res) => {
+//     try {
+//         if (req.params.id === "asdf1234") {
+//             const depositList = await userModel.aggregate([
+//                 {
+//                     $match: {
+//                         _id: new mongoose.Types.ObjectId(req.params.id)
+//                     }
+//                 },
+//                 {
+//                     $lookup: {
+//                         from: "DepositModel", // Assuming the collection name for DepositModel
+//                         localField: "AcNumber", // Field to match in UserModel
+//                         foreignField: "AcctountNo", // Field to match in DepositModel
+//                         as: "depositDetails"
+//                     }
+//                 }
+//             ]);
+
+//             if (depositList.length > 0) {
+//                 return res.status(200).send(depositList);
+//             } else {
+//                 return res.status(404).send({ msg: "No user found" });
+//             }
+//         } else {
+//             return res.status(500).send({ msg: "Invalid user ID" });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send({ msg: "Error in network" });
+//     }
+// });
 
 
 module.exports = AdminDeposit;
