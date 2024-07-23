@@ -97,16 +97,6 @@ ClosedDealRoute.post('/:id', async (req, res) => {
             closed_at
         };
 
-        // Create a closed deal entry
-        const closedDeal = await ClosedDealModel.create(closedDealData);
-
-        // Delete the deal with the provided order_id from DealModel
-        await DealModel.deleteOne({ order_id });
-
-        // Release the lock after successfully closing the deal
-        dealClosingLock[order_id] = false;
-
-        // PUT request to update profit
         try {
             await axios.put(`https://trading-jz57.onrender.com/close/addprofit/${id}`, {
                 profit: order_profit // or any other data you need to send
@@ -115,7 +105,18 @@ ClosedDealRoute.post('/:id', async (req, res) => {
             console.error('Error making PUT request:', putError);
             // Handle PUT request error (e.g., logging, alerting, etc.)
         }
+        // Create a closed deal entry
+        const closedDeal = await ClosedDealModel.create(closedDealData);
+       
 
+        // Delete the deal with the provided order_id from DealModel
+        await DealModel.deleteOne({ order_id });
+
+        // Release the lock after successfully closing the deal
+        dealClosingLock[order_id] = false;
+
+        // PUT request to update profit
+        
         return res.status(200).json({ msg: "Closed deal added successfully", closedDeal, order_profit });
     } catch (error) {
         console.error(error);
