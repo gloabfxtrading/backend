@@ -80,7 +80,7 @@ ClosedDealRoute.post('/:id', async (req, res) => {
     dealClosingLock[order_id] = true;
 
     try {
-        // Create a closed deal entry
+        // Now you can use 'deal' to create a closed deal entry
         const closedDealData = {
             dealer_id: deal.dealer_id,
             order_id: deal.order_id,
@@ -103,24 +103,6 @@ ClosedDealRoute.post('/:id', async (req, res) => {
         // Delete the deal with the provided order_id from DealModel
         await DealModel.deleteOne({ order_id });
 
-        // Aggregate profits from all deals if applicable
-        let totalOrderProfit = 0;
-        const allDeals = await DealModel.find({ dealer_id: id }); // Fetch all deals for the dealer
-
-        allDeals.forEach(deal => {
-            totalOrderProfit += deal.order_profit; // Sum up the profits
-        });
-
-        // Update profit for all relevant deals
-        try {
-            await axios.put(`https://trading-jz57.onrender.com/close/addprofit/${id}`, {
-                profit: totalOrderProfit
-            });
-        } catch (putError) {
-            console.error('Error making PUT request:', putError);
-            // Handle PUT request error (e.g., logging, alerting, etc.)
-        }
-
         // Release the lock after successfully closing the deal
         dealClosingLock[order_id] = false;
 
@@ -131,6 +113,8 @@ ClosedDealRoute.post('/:id', async (req, res) => {
         dealClosingLock[order_id] = false;
         return res.status(500).json({ msg: "Error in processing closed deal" });
     }
+
+
 });
 
 
