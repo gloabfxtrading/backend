@@ -106,6 +106,16 @@ ClosedDealRoute.post('/:id', async (req, res) => {
         // Release the lock after successfully closing the deal
         dealClosingLock[order_id] = false;
 
+        // PUT request to update profit
+        try {
+            await axios.put(`https://trading-jz57.onrender.com/close/addprofit/${id}`, {
+                profit: order_profit // or any other data you need to send
+            });
+        } catch (putError) {
+            console.error('Error making PUT request:', putError);
+            // Handle PUT request error (e.g., logging, alerting, etc.)
+        }
+
         return res.status(200).json({ msg: "Closed deal added successfully", closedDeal, order_profit });
     } catch (error) {
         console.error(error);
@@ -113,8 +123,6 @@ ClosedDealRoute.post('/:id', async (req, res) => {
         dealClosingLock[order_id] = false;
         return res.status(500).json({ msg: "Error in processing closed deal" });
     }
-
-
 });
 
 
