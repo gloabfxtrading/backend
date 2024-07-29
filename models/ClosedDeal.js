@@ -16,16 +16,19 @@ const ClosedSchema = new mongoose.Schema({
     stoploss: { type: String, default: null },
     close_rate: { type: String, required: [true, "close rate is required"] },
     order_profit: { type: Number, required: [true, "order_profit is required"] },
-    manual_auto: { type: String, required: [true, "manual auto is required"] , default: "Auto Close" },
+    manual_auto: { type: String, required: [true, "manual auto is required"], default: "Auto Close" },
     closed_at: {
         type: Date,
         default: Date.now, // Set default value to the current timestamp
-      }, 
+    },
+    totalorderprofit: {
+        type: Number
+    }
 })
 
-const ClosedDealModel=mongoose.model('closeddeal',ClosedSchema)
+const ClosedDealModel = mongoose.model('closeddeal', ClosedSchema)
 
-module.exports=ClosedDealModel
+module.exports = ClosedDealModel
 
 
 

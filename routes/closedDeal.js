@@ -61,7 +61,7 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
 const dealClosingLock = {};
 
 ClosedDealRoute.post('/:id', async (req, res) => {
-    const { close_rate, manual_auto, order_profit, closed_at, order_id } = req.body;
+    const { close_rate, manual_auto, order_profit, closed_at, order_id,totalorderprofit } = req.body;
     const { id } = req.params;
 
     // Check if deal exists with the provided order_id
@@ -94,7 +94,8 @@ ClosedDealRoute.post('/:id', async (req, res) => {
             order_profit,
             close_rate,
             manual_auto,
-            closed_at
+            closed_at,
+            totalorderprofit
         };
 
         // Create a closed deal entry
@@ -115,6 +116,93 @@ ClosedDealRoute.post('/:id', async (req, res) => {
     }
 
 
+});
+
+// Store timestamps for the last trigger for each account
+const lastTriggerTimestamps = new Map(); // Use a Map for better performance
+
+ClosedDealRoute.put("/add/:id", async (req, res) => {
+    try {
+        const accountId = req.params.id;
+        const profitToAdd = parseFloat(req.body.profit); // Assuming profit is sent in the request body
+
+        // Check the last trigger timestamp for this account
+        const now = Date.now();
+        const lastTrigger = lastTriggerTimestamps.get(accountId) || 0;
+        const INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
+
+        if (now - lastTrigger < INTERVAL_MS) {
+            return res.status(429).send({
+                msg: "Profit update already triggered recently. Please wait before trying again."
+            });
+        }
+
+        // Update the last trigger timestamp
+        lastTriggerTimestamps.set(accountId, now);
+
+        // Find the user record based on the account number
+        const user = await userModel.findOne({ AcNumber: accountId });
+
+        if (user) {
+            if (profitToAdd < 0) {
+                // Calculate potential new totalbalance and neteq
+                const newTotalBalance = user.totalbalance + profitToAdd;
+                const newNetEq = user.neteq + profitToAdd;
+
+                if (newTotalBalance < 0) {
+                    // Calculate deficit
+                    const deficit = -newTotalBalance;
+
+                    if (user.bonus >= deficit) {
+                        // Deduct from bonus to cover the deficit
+                        user.bonus -= deficit;
+                        user.totalbalance = 0;
+                        user.neteq = newNetEq;
+                    } else {
+                        // Not enough bonus to cover the deficit
+                        user.totalbalance = newTotalBalance; // This will still be negative
+                        user.neteq = newNetEq; // This will also be negative
+                        user.bonus = 0;
+                    }
+                } else {
+                    // Update balance and neteq as usual
+                    user.totalbalance = newTotalBalance;
+                    user.neteq = newNetEq;
+                }
+
+            } else {
+                // If profitToAdd is positive, add to both totalbalance and neteq
+                user.totalbalance += profitToAdd;
+                user.neteq += profitToAdd;
+            }
+
+            // Save the updated user record
+            await user.save();
+
+            // Create a new deposit entry for the user without modifying the existing DepositModel
+            const newDeposit = new DepositModel({
+                AccountNo: accountId,
+                balance: user.totalbalance, // Use the updated totalbalance
+                type_at: "deal", // You may want to set the order_id here
+                // ... other fields if needed
+            });
+
+            // Save the new deposit entry
+            const deposituser = await newDeposit.save();
+
+            return res.status(200).send({
+                AccountNo: accountId,
+                totalBalance: user.totalbalance, // Updated totalbalance from userModel
+                neteq: user.neteq,
+                bonus: user.bonus,
+            });
+        } else {
+            return res.status(404).send({ msg: "No user found for the provided account number" });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({ msg: "Error in network" });
+    }
 });
 
 
@@ -309,39 +397,36 @@ ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
         const deal = await ClosedDealModel.findOne({ order_id: orderId });
         const user = await userModel.findOne({ AcNumber: accountId })
         if (user) {
-            // Check if profitToAdd is negative
             if (profitToAdd < 0) {
-                // Case 1: If netEq and totalbalance are zero, add to both
-                if (user.neteq === 0 && user.totalbalance === 0) {
-                    user.totalbalance += profitToAdd;
-                    user.neteq += profitToAdd;
-                    // user.exposer+=(profitToAdd*500)
-                } else if (user.neteq !== 0 && user.totalbalance !== 0) {
-                    // Case 2: If netEq and totalbalance are not zero, add to both
-                    user.totalbalance += profitToAdd;
-                    user.neteq += profitToAdd;
-                    // user.exposer+=(profitToAdd*500)
-                } else if (user.neteq === 0 && user.totalbalance !== 0) {
-                    // Case 3: If netEq becomes zero and totalbalance is not zero, add to totalbalance
-                    user.totalbalance += profitToAdd;
-                } else if (user.neteq === 0 && user.totalbalance === 0) {
-                    // Case 4: If netEq becomes zero and totalbalance becomes zero, set bonus to 0 and add to totalbalance and netEq
-                    user.bonus = 0;
-                    user.totalbalance += profitToAdd;
-                    user.neteq += profitToAdd;
-                    // user.exposer+=(profitToAdd*500)
+                // Calculate potential new totalbalance and neteq
+                const newTotalBalance = user.totalbalance + profitToAdd;
+                const newNetEq = user.neteq + profitToAdd;
+
+                if (newTotalBalance < 0) {
+                    // Calculate deficit
+                    const deficit = -newTotalBalance;
+                    
+                    if (user.bonus >= deficit) {
+                        // Deduct from bonus to cover the deficit
+                        user.bonus -= deficit;
+                        user.totalbalance = 0;
+                        user.neteq = newNetEq;
+                    } else {
+                        // Not enough bonus to cover the deficit
+                        user.totalbalance = newTotalBalance; // This will still be negative
+                        user.neteq = newNetEq; // This will also be negative
+                        user.bonus = 0;
+                    }
+                } else {
+                    // Update balance and neteq as usual
+                    user.totalbalance = newTotalBalance;
+                    user.neteq = newNetEq;
                 }
-                if (user.neteq < 0 && user.totalbalance < 0) {
-                    user.bonus = 0;
-                    user.totalbalance += profitToAdd;
-                    user.neteq += profitToAdd;
-                    // user.exposer+=(profitToAdd*500)
-                }
+
             } else {
                 // If profitToAdd is positive, add to both totalbalance and neteq
                 user.totalbalance += profitToAdd;
                 user.neteq += profitToAdd;
-                // user.exposer+=(profitToAdd*500)
             }
 
             // Save the updated user record
@@ -351,9 +436,7 @@ ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
             const newDeposit = new DepositModel({
                 AccountNo: accountId,
                 balance: user.totalbalance, // Use the updated totalbalance
-                type_at: "deal",
-                order_id: orderId,
-                // You may want to set the order_id here
+                type_at: "deal", // You may want to set the order_id here
                 // ... other fields if needed
             });
 
@@ -379,7 +462,7 @@ ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
 
 
 
-ClosedDealRoute.use(authentication);
+// ClosedDealRoute.use(authentication);
 
 ClosedDealRoute.get("/:id", async (req, res) => {
     try {
