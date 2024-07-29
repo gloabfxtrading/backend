@@ -61,7 +61,7 @@ ClosedDealRoute.post('/:id/:order_id', async (req, res) => {
 const dealClosingLock = {};
 
 ClosedDealRoute.post('/:id', async (req, res) => {
-    const { close_rate, manual_auto, order_profit, closed_at, order_id,totalorderprofit } = req.body;
+    const { close_rate, manual_auto, order_profit, closed_at, order_id, totalorderprofit } = req.body;
     const { id } = req.params;
 
     // Check if deal exists with the provided order_id
@@ -126,7 +126,11 @@ ClosedDealRoute.put("/add/:id", async (req, res) => {
         const accountId = req.params.id;
         const profitToAdd = parseFloat(req.body.profit); // Assuming profit is sent in the request body
 
-        // Check the last trigger timestamp for this account
+        // Check if profitToAdd is a valid number
+        if (isNaN(profitToAdd)) {
+            return res.status(400).send({ msg: "Invalid profit value" });
+        }
+
         const now = Date.now();
         const lastTrigger = lastTriggerTimestamps.get(accountId) || 0;
         const INTERVAL_MS = 2 * 60 * 1000; // 2 minutes in milliseconds
@@ -331,7 +335,7 @@ ClosedDealRoute.put("/addprofit/:id", async (req, res) => {
                 if (newTotalBalance < 0) {
                     // Calculate deficit
                     const deficit = -newTotalBalance;
-                    
+
                     if (user.bonus >= deficit) {
                         // Deduct from bonus to cover the deficit
                         user.bonus -= deficit;
@@ -405,7 +409,7 @@ ClosedDealRoute.put("/addprofit/:id/:orderid", async (req, res) => {
                 if (newTotalBalance < 0) {
                     // Calculate deficit
                     const deficit = -newTotalBalance;
-                    
+
                     if (user.bonus >= deficit) {
                         // Deduct from bonus to cover the deficit
                         user.bonus -= deficit;
