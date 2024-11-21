@@ -16,7 +16,7 @@ module.exports=async(email,subject,text)=>{
             }
         })
         await transporter.sendMail({
-            from:GloabFx <${process.env.USER}>,
+            from:GloabFx process.env.USER,
             to:email,
             subject:subject,
             text:text
